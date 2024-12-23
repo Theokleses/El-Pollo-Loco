@@ -18,7 +18,7 @@ class DrawableObject{
     }
   
     drawFrame(ctx) {
-        if(this instanceof Character || this instanceof Chicken) {
+        if(this instanceof Character || this instanceof Chicken || this instanceof Coins) {
         ctx.beginPath();
         ctx.lineWidth = "5";  
         ctx.strokeStyle = "blue";
@@ -47,4 +47,5 @@ class DrawableObject{
       ctx.textAlign = "center";
       ctx.fillText(text, x + width / 2, y + height / 2 + 7);
     }
+
 }

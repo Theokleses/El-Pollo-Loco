@@ -4,6 +4,7 @@ class MovableObject extends DrawableObject {
   speedY = 0;
   acceleration = 2.5;
   energy = 100;
+  energyCoin = 18;
   lastHit = 0;
 
 
@@ -49,6 +50,15 @@ class MovableObject extends DrawableObject {
       } else {
         this.lastHit =  new Date().getTime();
     }
+  }
+
+  add() {
+    this.energyCoin += 20;
+    if(this.energyCoin > 100) {
+      this.energyCoin = 100;
+    } else {
+      this.lastHit =  new Date().getTime();
+  }
   }
 
   isHurt() {

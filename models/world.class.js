@@ -7,6 +7,7 @@ class World {
   camera_x = 0;
   statusBar = new StatusBar();
   coinBar = new CoinBar();
+  coins = new Coins();
   bottleBar = new BottleBar();
   throwableObjects = [];
   startscreen = new StartScreen();
@@ -47,7 +48,19 @@ class World {
           this.statusBar.setPercentage(this.character.energy);
         }
     });
+
+    //  this.level.coin;
+    this.level.coins.forEach((coin, index) => {
+      if (this.character.isColliding(coin)) {
+        console.log('Coin collected!', this.character.energyCoin);
+        this.character.add();
+        this.coinBar.setCoinPercentage(this.character.energyCoin);
+        this.level.coins.splice(index, 1); // Entfernt den Coin aus dem Array
+      }
+    });
+ 
   }
+
 
   draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -69,6 +82,7 @@ class World {
     this.ctx.translate(this.camera_x, 0);
 
     this.addToMap(this.character);
+    this.addObjectToMap(this.level.coins);
     this.addObjectToMap(this.level.clouds);
     this.addObjectToMap(this.level.enemies);
     this.addObjectToMap(this.throwableObjects);
@@ -113,5 +127,4 @@ class World {
       this.addToMap(o);
     });
   }
-
 }
