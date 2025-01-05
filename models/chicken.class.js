@@ -1,31 +1,40 @@
 class Chicken extends MovableObject {
-  y = 370;
+  y = 347;
   height = 60;
   width = 50;
-  IMAGES_WALKING = ["img/3_enemies_chicken/chicken_normal/1_walk/1_w.png",
-                    "img/3_enemies_chicken/chicken_normal/1_walk/2_w.png",
-                    "img/3_enemies_chicken/chicken_normal/1_walk/3_w.png"
-
+  energy = 1; // Hühner sterben mit einem Schlag
+  IMAGES_WALKING = [
+    "img/3_enemies_chicken/chicken_normal/1_walk/1_w.png",
+    "img/3_enemies_chicken/chicken_normal/1_walk/2_w.png",
+    "img/3_enemies_chicken/chicken_normal/1_walk/3_w.png",
   ];
 
-  
+  IMAGE_DEAD = ["img/3_enemies_chicken/chicken_normal/2_dead/dead.png"];
+
   constructor() {
     super().loadImage("img/3_enemies_chicken/chicken_normal/1_walk/1_w.png");
-    this.x = 200 + Math.random() * 500; 
+    this.x = 600 + Math.random() * 900;
     this.loadImages(this.IMAGES_WALKING);
-    this.speed = 0.15 + Math.random() * 0.5;
+    this.loadImages(this.IMAGE_DEAD);
+    this.speed = 0.15 + Math.random() * 0.7;
 
     this.animate();
   }
 
-  animate(){
+
+  animate() {
     setInterval(() => {
-      this.moveLeft();
+      if (!this.isDead()) {
+        this.moveLeft();
+      }
     }, 1000 / 60);
 
-    setInterval(() =>{
-        this.playAnimation(this.IMAGES_WALKING);
+    setInterval(() => {
+      if (this.isDead()) {
+        this.playAnimation(this.IMAGE_DEAD); // Zeige das tote Bild an
+      } else {
+        this.playAnimation(this.IMAGES_WALKING); // Zeige die Laufanimation
+      }
     }, 100);
   }
-  
 }

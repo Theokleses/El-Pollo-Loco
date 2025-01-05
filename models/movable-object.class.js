@@ -1,12 +1,98 @@
+// class MovableObject extends DrawableObject {
+//   speed = 0.15;
+//   otherDirection = false;
+//   speedY = 0;
+//   acceleration = 2.5;
+//   energy = 100;
+//   lastHit = 0;
+
+
+//   applyGravaty() {
+//     setInterval(() => {
+//       if (this.isAboveGround() || this.speedY > 0) {
+//         this.y -= this.speedY;
+//         this.speedY -= this.acceleration;
+//       }
+//     }, 1000 / 25);
+//   }
+
+//   isAboveGround() {
+//     if(this instanceof ThrowableObject){ // Throable objects should always fall
+//           return true;
+//     } else {
+//         return this.y < 180;
+//     }
+//   }
+  
+//   playAnimation(images) {
+//     let i = this.currentImage % images.length; // let i = 7 % 6; => 1, Rest 1 , i = 0, 1, 2, 3, 4, 5, 0 (fängt wieder bei 0 an)
+//     let path = images[i];
+//     this.img = this.imageCache[path];
+//     this.currentImage++;
+//   }
+
+//   moveRight() {
+//     this.x += this.speed;
+//   }
+
+//   moveLeft() {
+//     this.x -= this.speed;
+//   }
+//   // jump() {
+//   //   this.speedY = 30;
+//   // }
+
+//   hit() {
+//     this.energy -= 5;
+//       if(this.energy < 0) {
+//         this.energy = 0;
+//       } else {
+//         this.lastHit =  new Date().getTime();
+//     }
+//   }
+
+//   isHurt() {
+//       let timepassed = new Date().getTime() - this.lastHit; // Difference in ms
+//       timepassed = timepassed / 1000; // Difference in s
+//       return timepassed < 1;
+
+//   }
+
+//   isDead() {
+//       return this.energy == 0;
+    
+//   }
+
+//   // character.isColliding(chicken);
+//   isColliding(mo) {
+//     return this.x + this.width > mo.x &&
+//         this.y + this.height > mo.y &&
+//         this.x < mo.x &&
+//         this.y < mo.y + mo.height;
+//   }
+
+//   isLegsColliding(mo) {
+//     const offset = 10; // 5 Pixel Versatz
+//     const legsY = this.y + this.height * 0.7;
+//     const legsHeight = this.height * 0.3;
+
+//     return this.x + this.width > mo.x - offset &&
+//           legsY + legsHeight > mo.y - offset &&
+//           this.x < mo.x + mo.width + offset &&
+//           legsY < mo.y + mo.height + offset;
+//   }
+
+
+// }
+
 class MovableObject extends DrawableObject {
   speed = 0.15;
   otherDirection = false;
   speedY = 0;
   acceleration = 2.5;
   energy = 100;
-  energyCoin = 18;
   lastHit = 0;
-
+  currentImage = 0;
 
   applyGravaty() {
     setInterval(() => {
@@ -16,19 +102,20 @@ class MovableObject extends DrawableObject {
       }
     }, 1000 / 25);
   }
+  
 
   isAboveGround() {
-    if(this instanceof ThrowableObject){ // Throable objects should always fall
-          return true;
+    if(this instanceof ThrowableObject){ // Throwable objects should always fall
+      return this.y < 350;
     } else {
-        return this.y < 180;
+      return this.y < 180;
     }
   }
-  
+
   playAnimation(images) {
-    let i = this.currentImage % images.length; // let i = 7 % 6; => 1, Rest 1 , i = 0, 1, 2, 3, 4, 5, 0 (fängt wieder bei 0 an)
+    let i = this.currentImage % images.length; // Rotating through images
     let path = images[i];
-    this.img = this.imageCache[path];
+    this.img = this.imageCache[path]; // Assuming imageCache is defined
     this.currentImage++;
   }
 
@@ -39,46 +126,43 @@ class MovableObject extends DrawableObject {
   moveLeft() {
     this.x -= this.speed;
   }
-  jump() {
-    this.speedY = 30;
-  }
 
+  // Hit method: Trigger hurt animation and decrease energy
   hit() {
-    this.energy -= 5;
-      if(this.energy < 0) {
+    let damage = this instanceof Endboss ? 20 : 5; // Endboss erhält 25 Schaden, andere 5
+    this.energy -= damage;
+    if (this.energy < 0) {
         this.energy = 0;
-      } else {
-        this.lastHit =  new Date().getTime();
     }
-  }
+    this.lastHit = new Date().getTime(); // Zeitpunkt des Treffers setzen
+}
 
-  add() {
-    this.energyCoin += 20;
-    if(this.energyCoin > 100) {
-      this.energyCoin = 100;
-    } else {
-      this.lastHit =  new Date().getTime();
-  }
-  }
 
   isHurt() {
-      let timepassed = new Date().getTime() - this.lastHit; // Difference in ms
-      timepassed = timepassed / 1000; // Difference in s
-      return timepassed < 1;
-
+    let timePassed = new Date().getTime() - this.lastHit; // Zeitdifferenz in ms
+    return timePassed < 250; // Hurt-Animation für 1 Sekunde nach Treffer
   }
-
   isDead() {
-      return this.energy == 0;
-    
+    return this.energy === 0;
   }
 
-  // character.isColliding(chicken);
+  // Collision detection
   isColliding(mo) {
     return this.x + this.width > mo.x &&
-        this.y + this.height > mo.y &&
-        this.x < mo.x &&
-        this.y < mo.y + mo.height;
+      this.y + this.height > mo.y &&
+      this.x < mo.x &&
+      this.y < mo.y + mo.height;
+  }
+
+  isLegsColliding(mo) {
+    const offset = 10; // 5 Pixel offset
+    const legsY = this.y + this.height * 0.7;
+    const legsHeight = this.height * 0.3;
+
+    return this.x + this.width > mo.x - offset &&
+      legsY + legsHeight > mo.y - offset &&
+      this.x < mo.x + mo.width + offset &&
+      legsY < mo.y + mo.height + offset;
   }
 }
 

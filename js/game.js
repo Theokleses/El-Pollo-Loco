@@ -12,9 +12,15 @@ function init() {
 
 function startGame() {
    gameState = "Game";
-   world.setWorld();
-   
+   world.setWorld(); 
 }
+function resetGame() {
+   gameState = "Start";
+   world.setWorld(); 
+   world.character.energy = 100; 
+   console.log('Game Reset');
+}
+
 
 window.addEventListener('keydown', (event) =>{
    console.log(event.keyCode);

@@ -1,8 +1,12 @@
 class Character extends MovableObject {
-  y = 35;
+  y = 85;
   height = 235;
   width = 120;
   speed = 10;
+  availableBottles = 0; // Neue Variable für verfügbare Flaschen
+  energyBottle = 0; // Bestehende Variable für die Statusleiste
+  availableCoins = 0;
+  energyCoin = 0;
   IMAGES_WALKING = [
     "img/2_character_pepe/2_walk/W-21.png",
     "img/2_character_pepe/2_walk/W-22.png",
@@ -49,10 +53,35 @@ class Character extends MovableObject {
       this.loadImages(this.IMAGES_JUMPING);
       this.loadImages(this.IMAGES_DEAD);
       this.loadImages(this.IMAGES_HURT);
+      this.collisionCooldown = false;
 
       this.animate();
       this.applyGravaty();
   }
+  // addBottle() {
+  //   this.energyBottle += 23; // Erhöht die Flaschenenergie
+  //   if (this.energyBottle > 100) {
+  //     this.energyBottle = 100;
+  //   } else {
+  //     this.lastHit = new Date().getTime();
+  //   }
+  //   this.availableBottles = Math.min(this.availableBottles + 1, 5); // Maximal 5 Flaschen verfügbar
+  //   this.world.bottleBar.setBottlePercentage(this.availableBottles * 23); // Aktualisiere die Bar
+  // }
+
+  addBottle() {
+    this.availableBottles = Math.min(this.availableBottles + 1, 5); // Maximal 5 Flaschen
+    this.energyBottle = this.availableBottles * 20; // Prozentwert anpassen
+    this.world.bottleBar.setBottlePercentage(this.energyBottle); // Bar aktualisieren
+}
+  addCoin() {
+    this.availableCoins = Math.min(this.availableCoins + 1, 5); // Maximal 5 Flaschen
+    this.energyCoin = this.availableCoins * 20; // Prozentwert anpassen
+    this.world.coinBar.setCoinPercentage(this.energyCoin); // Bar aktualisieren
+  }
+
+
+
   animate() {
     setInterval(() => { 
       this.walking_sound.pause();
@@ -90,5 +119,26 @@ class Character extends MovableObject {
         }
       }
     }, 50);
+  }
+
+  jump() {
+    this.speedY = 30; // Charakter springt
+    this.checkDamageOnJump(); // Überprüfe, ob Gegner getroffen werden
+  }
+
+  checkDamageOnJump() {
+    this.world.level.enemies.forEach((enemy) => {
+      if (this.isColliding(enemy) && this.isAboveGround()) {
+        enemy.energy = 0; // Gegner stirbt sofort
+        this.world.level.enemies = this.world.level.enemies.filter(e => e.energy > 0); // Entferne tote Gegner
+      }
+    });
+  }
+
+
+  resetCollisionCooldown() {
+    setTimeout(() => {
+      this.collisionCooldown = false; // Cooldown nach 200ms zurücksetzen
+    }, 200);
   }
 }
