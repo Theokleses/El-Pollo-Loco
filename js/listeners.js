@@ -49,18 +49,18 @@
 //     });
 // }
 
-
-function startGameListener(button) {
+let buttontoPush = "";
+function addButtonListener() {
     canvas.addEventListener('click', (event) => {
         const rect = canvas.getBoundingClientRect();
-        const mouseX = event.clientX - rect.left;
-        const mouseY = event.clientY - rect.top;
+         mouseX = event.clientX - rect.left;
+         mouseY = event.clientY - rect.top;
 
         if (
-            mouseX >= button.x &&
-            mouseX <= button.x + button.width &&
-            mouseY >= button.y &&
-            mouseY <= button.y + button.height
+            mouseX >= buttontoPush.x &&
+            mouseX <= buttontoPush.x + buttontoPush.width &&
+            mouseY >= buttontoPush.y &&
+            mouseY <= buttontoPush.y + buttontoPush.height
         ) {
             if (gameState == "Start") {
                 startGame();
@@ -73,7 +73,3 @@ function startGameListener(button) {
         }
     });
 }
-
-
-
-

@@ -6,8 +6,7 @@ class WinScreen extends DrawableObject{
     startGameButton = new StartButton();
 
     constructor() {
-        super().loadImage("img/9_intro_outro_screens/win/win_2.png");
-        startGameListener(this.startGameButton);        
+        super().loadImage("img/9_intro_outro_screens/win/win_2.png");      
     }
 
 }

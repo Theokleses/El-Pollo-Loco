@@ -6,7 +6,7 @@ let gameState = "Start";
 function init() {
     canvas = document.getElementById('canvas');
     world = new World(canvas, keyboard);
-
+    addButtonListener();
     console.log('My Charachter is', world.character);
 }
 

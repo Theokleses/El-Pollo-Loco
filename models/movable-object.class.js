@@ -92,7 +92,7 @@ class MovableObject extends DrawableObject {
   acceleration = 2.5;
   energy = 100;
   lastHit = 0;
-  currentImage = 0;
+  // currentImage = 0;
 
   applyGravaty() {
     setInterval(() => {
@@ -151,7 +151,15 @@ class MovableObject extends DrawableObject {
     return this.energy === 0;
   }
 
-  isLegsColliding(mo) {
+   // Collision detection
+   isColliding(mo) {
+    return this.x + this.width > mo.x &&
+      this.y + this.height > mo.y &&
+      this.x < mo.x &&
+      this.y < mo.y + mo.height;
+  }
+
+   isLegsColliding(mo) {
     const offset = 10; // 5 Pixel offset
     const legsY = this.y + this.height * 0.7;
     const legsHeight = this.height * 0.3;
@@ -161,5 +169,5 @@ class MovableObject extends DrawableObject {
       this.x < mo.x + mo.width + offset &&
       legsY < mo.y + mo.height + offset;
   }
-}
 
+}

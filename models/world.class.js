@@ -192,19 +192,19 @@ draw() {
     if (gameState == "Start") {
         this.addToMap(this.startscreen);
         this.startscreen.drawButton(this.ctx, 270, 60, 180, 50, "Start Game");
-        startGameListener(this.startscreen); 
+        buttontoPush = this.startscreen.startGameButton;
 
 
     }    if (gameState == "Lose") {
         this.addToMap(this.losescreen); 
         this.losescreen.drawButton(this.ctx, 270, 60, 180, 50, "New Game");
-        startGameListener(this.losescreen); 
+        buttontoPush = this.losescreen.startGameButton;
   }
 
         if (gameState == "Win") {
         this.addToMap(this.winscreen); 
         this.winscreen.drawButton(this.ctx, 270, 60, 180, 50, "New Game");
-        startGameListener(this.winscreen); 
+        buttontoPush = this.winscreen.startGameButton;
 }
     if (gameState == "Game") {
         this.ctx.translate(this.camera_x, 0);
