@@ -68,4 +68,13 @@ class DrawableObject{
       ctx.fillText(text, x + width / 2, y + height / 2 + 7);
     }
 
+      // Collision detection
+  isColliding(mo) {
+    return this.x + this.width > mo.x &&
+      this.y + this.height > mo.y &&
+      this.x < mo.x &&
+      this.y < mo.y + mo.height;
+  }
+
+
 }

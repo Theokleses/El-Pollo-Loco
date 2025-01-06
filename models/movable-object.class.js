@@ -131,8 +131,13 @@ class MovableObject extends DrawableObject {
   hit() {
     let damage = this instanceof Endboss ? 20 : 5; // Endboss erhält 25 Schaden, andere 5
     this.energy -= damage;
-    if (this.energy < 0) {
+    if (this.energy <= 0) {
         this.energy = 0;
+       if(this instanceof Character) {
+          gameState = "Lose";
+        } if(this instanceof Endboss) {
+          gameState = "Win";
+        }
     }
     this.lastHit = new Date().getTime(); // Zeitpunkt des Treffers setzen
 }
@@ -144,14 +149,6 @@ class MovableObject extends DrawableObject {
   }
   isDead() {
     return this.energy === 0;
-  }
-
-  // Collision detection
-  isColliding(mo) {
-    return this.x + this.width > mo.x &&
-      this.y + this.height > mo.y &&
-      this.x < mo.x &&
-      this.y < mo.y + mo.height;
   }
 
   isLegsColliding(mo) {

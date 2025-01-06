@@ -1,13 +1,34 @@
-body{
+body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    height: 100vh;
     margin: 0;
     overflow: hidden;
+    background-image: url("img/5_background/background2.png");
+    background-size: cover;
+    background-position: center;
+    font-family: 'zabras', Arial, Helvetica, sans-serif;
 }
 canvas {
     background-color: black;
     display: block;
+}
+
+h1 {
+  font-size: 64px;
+  letter-spacing: 3px;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+}
+@font-face {
+  font-family: 'zabras';
+  src: url('fonts/zabars.ttf') format('truetype')
+}  
+.arrow-keys {
+  height: 100px;
+}
+.key-explanation {
+  display: flex;
 }
 
   #start-screen {

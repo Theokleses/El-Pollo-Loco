@@ -7,12 +7,13 @@ class World {
   camera_x = 0;
   statusBar = new StatusBar();
   coinBar = new CoinBar();
-  coins = new Coins();
+  coinsGap = 600;
   bottleBar = new BottleBar();
   bottles = new Bottles();
   throwableObjects = [];
   startscreen = new StartScreen();
   losescreen = new LoseScreen();
+  winscreen = new WinScreen();
   reachEndBoss = false;
   endbossBar = new EndbossBar();
   endboss = new Endboss();
@@ -22,12 +23,8 @@ class World {
     this.canvas = canvas;
     this.keyboard = keyboard;
     this.character.world = this;
+    this.level = null;
     this.draw();
-  }
-
-  setWorld() {
-    this.level = level1;
-    this.run();
   }
 
   run() {
@@ -35,6 +32,46 @@ class World {
       this.checkCollisions();
       this.checkThrowObejects();
       this.checkCharacterPosition();
+    }, 100);
+    
+  }
+  setWorld() {
+    firstLevel();
+    this.level = level1;
+    this.Spawner();
+    this.run();
+  }
+
+  Spawner() {
+    this.spawnCoin();
+    this.spawnBottle();
+  }
+  spawnCoin() {
+    if (this.level.coins.length >= 5) {
+      return; // Stop spawning if there are already 5 coins
+    }
+    let newCoin = new Coins(this.coinsGap);
+    this.coinsGap += 70 + Math.random() * 70;
+    this.level.coins.push(newCoin);
+    setTimeout(() => {
+      if(this.coinsGap <= 2000){
+      this.spawnCoin();
+      }
+    }, 100);
+  
+  }
+
+  spawnBottle() {
+    if (this.level.bottles.length >= 5) {
+      return; // Stop spawning if there are already 5 coins
+    }
+    let newBottle = new Bottles(this.coinsGap);
+    this.coinsGap += 70 + Math.random() * 70;
+    this.level.bottles.push(newBottle);
+    setTimeout(() => {
+      if(this.coinsGap <= 2000){
+      this.spawnBottle();
+      }
     }, 100);
   }
 
@@ -90,6 +127,8 @@ checkThrowObejects() {
         this.character.addCoin();
         this.coinBar.setCoinPercentage(this.character.energyCoin);
         this.level.coins.splice(index, 1); // Entferne die Münze aus dem Level
+        console.log('Coin collected', level1);
+        
       }
     });
   
@@ -156,14 +195,17 @@ draw() {
         startGameListener(this.startscreen); 
 
 
-    }     if (this.character.energy == 0) {
+    }    if (gameState == "Lose") {
         this.addToMap(this.losescreen); 
         this.losescreen.drawButton(this.ctx, 270, 60, 180, 50, "New Game");
-        newGameListener(this.losescreen); 
-        return;
+        startGameListener(this.losescreen); 
   }
 
-
+        if (gameState == "Win") {
+        this.addToMap(this.winscreen); 
+        this.winscreen.drawButton(this.ctx, 270, 60, 180, 50, "New Game");
+        startGameListener(this.winscreen); 
+}
     if (gameState == "Game") {
         this.ctx.translate(this.camera_x, 0);
         this.addObjectToMap(this.level.backgroundObjects);
@@ -197,6 +239,15 @@ draw() {
     });
 }
 
+resetGame(){
+  this.character.energy = 100;
+  // this.level = level1;
+  this.character.x = 120;
+  // this.coinsGap = 600;
+  // this.level.coins = [];
+  damiLevel();
+  startNewGame();
+} 
 
   // draw() {
   //   this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);

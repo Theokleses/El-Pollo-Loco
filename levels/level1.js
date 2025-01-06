@@ -50,27 +50,32 @@
 //     ]
 // );
 
-const createGroup = (numItems, minX, maxX, gap, classType) => {
-    const group = [];
-    for (let i = 0; i < numItems; i++) {
-        group.push(new classType(i, minX, maxX, gap));
-    }
-    return group;
-};
+// const createGroup = (numItems, minX, maxX, gap, classType) => {
+//     const group = [];
+//     for (let i = 0; i < numItems; i++) {
+//         group.push(new classType(i, minX, maxX, gap));
+//     }
+//     return group;
+// };
 
-const bottlesGroup1 = createGroup(3, 750, 3000, 200, Bottles); // 3 Bottles in der ersten Gruppe
-const bottlesGroup2 = createGroup(2, 2000, 3000, 200, Bottles); // 2 Bottles in der zweiten Gruppe
+// const bottlesGroup1 = createGroup(3, 750, 3000, 200, Bottles); // 3 Bottles in der ersten Gruppe
+// const bottlesGroup2 = createGroup(2, 2000, 3000, 200, Bottles); // 2 Bottles in der zweiten Gruppe
 
-const coinsGroup1 = createGroup(3, 500, 1500, 150, Coins); // 3 Coins in der ersten Gruppe
-const coinsGroup2 = createGroup(2, 1600, 2500, 150, Coins); // 2 Coins in der zweiten Gruppe
+// const coinsGroup1 = createGroup(3, 500, 1500, 150, Coins); // 3 Coins in der ersten Gruppe
+// const coinsGroup2 = createGroup(2, 1600, 2500, 150, Coins); // 2 Coins in der zweiten Gruppe
 
-// Alle Coins und Bottles zusammenführen
-const allCoins = [...coinsGroup1, ...coinsGroup2];
-const allBottles = [...bottlesGroup1, ...bottlesGroup2];
+// // Alle Coins und Bottles zusammenführen
+// const allCoins = [...coinsGroup1, ...coinsGroup2];
+// const allBottles = [...bottlesGroup1, ...bottlesGroup2];
 
+let level1;
+function damiLevel() {
+    level1 = null;
+}
 
+function firstLevel() {
 
-const level1 = new Level(
+ level1 = new Level(
     [
         new Chicken(),
         new Chicken(),
@@ -109,6 +114,7 @@ const level1 = new Level(
         new BackgroundObject('img/5_background/layers/2_second_layer/2.png', 719 * 3),
         new BackgroundObject('img/5_background/layers/1_first_layer/2.png', 719 * 3),
     ],
-    allCoins, // Coins korrekt einfügen
-    allBottles // Bottles korrekt einfügen
+     [],
+     []
 );
+}

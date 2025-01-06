@@ -108,8 +108,10 @@ class Bottles extends DrawableObject {
     height = 70;
     width = 70;
 
-    constructor(index, minX, maxX, gap) {
+    constructor(x) {
         super().loadImage("img/6_salsa_bottle/salsa_bottle.png");
-        this.x = minX + index * gap + Math.random() * (gap / 2) - (gap / 4); // Zufällige Position direkt berechnet
+        this.x = x;
+        this.y = 200 + Math.random() * 200;
+        // this.x = minX + index * gap + Math.random() * (gap / 2) - (gap / 4); // Zufällige Position direkt berechnet
     }
 }

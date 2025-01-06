@@ -16,7 +16,7 @@
 //       });
 // }
 
-// function startGameListener(button) {
+// function addButtonClickListener(button, callback) {
 //     canvas.addEventListener('click', (event) => {
 //         const rect = canvas.getBoundingClientRect();
 //         const mouseX = event.clientX - rect.left;
@@ -28,17 +28,29 @@
 //             mouseY >= button.y &&
 //             mouseY <= button.y + button.height
 //         ) {
-//             if (gameState == "Start") {
-//                 startGame();
-//             } else if (gameState == "Game" && world.character.energy == 0) {
-//                 resetGame();
-//             }
+//             callback(); // Führt die übergebene Callback-Funktion aus
+//         }
+//     });
+// }
+
+// function startGameListener(button) {
+//     addButtonClickListener(button, () => {
+//         if (gameState == "Start") {
+//             startGame(); 
+//         }
+//     });
+// }
+
+// function newGameListener(button) {
+//     addButtonClickListener(button, () => {
+//         if (gameState == "Game" && world.character.energy == 0) {
+//             resetGame(); 
 //         }
 //     });
 // }
 
 
-function addButtonClickListener(button, callback) {
+function startGameListener(button) {
     canvas.addEventListener('click', (event) => {
         const rect = canvas.getBoundingClientRect();
         const mouseX = event.clientX - rect.left;
@@ -50,25 +62,18 @@ function addButtonClickListener(button, callback) {
             mouseY >= button.y &&
             mouseY <= button.y + button.height
         ) {
-            callback(); // Führt die übergebene Callback-Funktion aus
+            if (gameState == "Start") {
+                startGame();
+            } else if (gameState == "Lose") {
+                world.resetGame();
+            } else if (gameState == "Win") {
+                console.log("Displaying Win Screen");
+                world.resetGame();
+            }
         }
     });
 }
 
-function startGameListener(button) {
-    addButtonClickListener(button, () => {
-        if (gameState == "Start") {
-            startGame(); 
-        }
-    });
-}
 
-function newGameListener(button) {
-    addButtonClickListener(button, () => {
-        if (gameState == "Game" && world.character.energy == 0) {
-            resetGame(); 
-        }
-    });
-}
 
 

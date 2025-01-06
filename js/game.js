@@ -12,13 +12,13 @@ function init() {
 
 function startGame() {
    gameState = "Game";
-   world.setWorld(); 
+   world.setWorld();
 }
-function resetGame() {
-   gameState = "Start";
-   world.setWorld(); 
-   world.character.energy = 100; 
-   console.log('Game Reset');
+function startNewGame() {
+   world = null;
+   world = new World(canvas, keyboard);
+   gameState = "Game";
+   world.setWorld();
 }
 
 
