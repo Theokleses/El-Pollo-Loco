@@ -23,7 +23,7 @@ class World {
     this.canvas = canvas;
     this.keyboard = keyboard;
     this.character.world = this;
-    this.level = null;
+    this.level = null;;
     this.draw();
   }
 
@@ -99,6 +99,12 @@ checkThrowObejects() {
     for (let i = this.level.enemies.length - 1; i >= 0; i--) {
       const enemy = this.level.enemies[i];
       if (this.character.isColliding(enemy) && enemy.energy > 0) {
+        if(enemy instanceof Endboss){
+          enemy.changeSpeed(0);
+          setTimeout(() => {
+            enemy.changeSpeed(30);
+          }, 1000);
+        }
         if (!this.character.collisionCooldown) { // Verhindert Mehrfachkollisionen
           this.character.collisionCooldown = true;
   
@@ -151,6 +157,7 @@ checkThrowObejects() {
         this.throwableObjects.splice(bottleIndex, 1); // Entferne die Flasche aus den Wurfobjekten
       }
     });
+
   
     // Check collisions with throwable objects and enemies
     this.throwableObjects.forEach((bottle, bottleIndex) => {
@@ -185,7 +192,7 @@ checkThrowObejects() {
       }
     });
   } 
- 
+
 draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 

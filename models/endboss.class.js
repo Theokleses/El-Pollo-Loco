@@ -60,7 +60,42 @@ class Endboss extends MovableObject{
 
     }
 
-    // animate() {
+    changeSpeed(speed) {
+        this.speed = speed;
+        
+    }
+    
+
+    animate() {
+        setInterval(() => {
+            if (this.isDead()) {
+                this.playAnimation(this.IMAGES_DEAD);
+            } else if (this.isHurt()) {
+                this.changeSpeed(20);
+                this.stateAlert = false; // Endboss ist nicht mehr im Alert-Zustand
+                this.playAnimation(this.IMAGES_HURT);
+            } else if (this.stateAlert) {
+                this.playAnimation(this.IMAGES_ALERT);
+            } else {
+                this.moveLeft();
+                // Walk- und Attack-Animation nacheinander abspielen
+                this.playAnimation(this.IMAGES_WALK); // Erst Walk
+                setTimeout(() => {
+                    this.playAnimation(this.IMAGES_ATTACK); // Dann Attack
+                }, 50); // 500ms Verzögerung (nach Walk)
+            }
+        }, 200); // Einheitliche Taktung
+    }    
+
+}
+
+
+
+
+
+
+
+// animate() {
     //     setInterval(() =>{
     //         this.playAnimation(this.IMAGES_ALERT);
     //         if (this.isHurt()) {
@@ -92,27 +127,6 @@ class Endboss extends MovableObject{
     // }
     
 
-    animate() {
-        setInterval(() => {
-            if (this.isDead()) {
-                this.playAnimation(this.IMAGES_DEAD);
-            } else if (this.isHurt()) {
-                this.stateAlert = false; // Endboss ist nicht mehr im Alert-Zustand
-                this.playAnimation(this.IMAGES_HURT);
-            } else if (this.stateAlert) {
-                this.playAnimation(this.IMAGES_ALERT);
-            } else {
-                setInterval(() => {
-                    this.moveLeft();
-                }, 1000 / 60);
-    
-                // Walk- und Attack-Animation nacheinander abspielen
-                this.playAnimation(this.IMAGES_WALK); // Erst Walk
-                setTimeout(() => {
-                    this.playAnimation(this.IMAGES_ATTACK); // Dann Attack
-                }, 50); // 500ms Verzögerung (nach Walk)
-            }
-        }, 200); // Einheitliche Taktung
-    }
-    
-}
+
+
+

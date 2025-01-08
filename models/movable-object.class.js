@@ -128,19 +128,60 @@ class MovableObject extends DrawableObject {
   }
 
   // Hit method: Trigger hurt animation and decrease energy
-  hit() {
-    let damage = this instanceof Endboss ? 20 : 5; // Endboss erhält 25 Schaden, andere 5
-    this.energy -= damage;
-    if (this.energy <= 0) {
-        this.energy = 0;
-       if(this instanceof Character) {
-          gameState = "Lose";
-        } if(this instanceof Endboss) {
-          gameState = "Win";
-        }
-    }
-    this.lastHit = new Date().getTime(); // Zeitpunkt des Treffers setzen
+//   hit() {
+//     let damage = this instanceof Endboss ? 20 : 5; // Endboss erhält 25 Schaden, andere 5
+//     this.energy -= damage;
+//     if (this.energy <= 0) {
+//         this.energy = 0;
+//        if(this instanceof Character) {
+//           gameState = "Lose";
+//         } if(this instanceof Endboss) {
+//           gameState = "Win";
+//         }
+//     }
+//     this.lastHit = new Date().getTime(); // Zeitpunkt des Treffers setzen
+// }
+
+
+// hit() {
+//   let damage = this instanceof Endboss ? 20 : 5; // Endboss erhält 20 Schaden, andere 5
+//   this.energy -= damage;
+
+//   if (this.energy <= 0) {
+//       this.energy = 0;
+
+//       if (this instanceof Character) {
+//           setTimeout(() => {
+//               gameState = "Lose"; // Verzögert den Wechsel zum Lose-Screen
+//           }, 1000); // 1000ms (1 Sekunde) Verzögerung für die Dead-Animation
+//       }
+
+//       if (this instanceof Endboss) {
+//           setTimeout(() => {
+//               gameState = "Win"; // Verzögert den Wechsel zum Win-Screen
+//           }, 1000); // 1000ms (1 Sekunde) Verzögerung für die Dead-Animation
+//       }
+//   }
+
+//   this.lastHit = new Date().getTime(); // Zeitpunkt des Treffers setzen
+// }
+hit() {
+  let damage = this instanceof Endboss ? 20 : 5; // Endboss erhält 20 Schaden, andere 5
+  this.energy -= damage;
+
+  if (this.energy <= 0) {
+      this.energy = 0;
+
+      // Überprüfen, ob es der Character oder der Endboss ist, und passenden GameState setzen
+      const nextGameState = this instanceof Character ? "Lose" : "Win";
+      setTimeout(() => {
+          gameState = nextGameState; // Nach 1 Sekunde den GameState ändern
+      }, 1000);
+  }
+
+  this.lastHit = new Date().getTime(); // Zeitpunkt des Treffers setzen
 }
+
 
 
   isHurt() {

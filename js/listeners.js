@@ -49,18 +49,18 @@
 //     });
 // }
 
+
 let buttontoPush = "";
 function addButtonListener() {
     canvas.addEventListener('click', (event) => {
         const rect = canvas.getBoundingClientRect();
          mouseX = event.clientX - rect.left;
          mouseY = event.clientY - rect.top;
-
         if (
             mouseX >= buttontoPush.x &&
-            mouseX <= buttontoPush.x + buttontoPush.width &&
-            mouseY >= buttontoPush.y &&
-            mouseY <= buttontoPush.y + buttontoPush.height
+            mouseX <= buttontoPush.x  + buttontoPush.width && 
+            mouseY >= buttontoPush.y  &&
+            mouseY <= buttontoPush.y  + buttontoPush.height 
         ) {
             if (gameState == "Start") {
                 startGame();
@@ -73,3 +73,11 @@ function addButtonListener() {
         }
     });
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const muteButton = document.getElementById("muteButton");
+    muteButton.addEventListener("click", () => {
+        world.character.toggleMute();
+ 
+    });
+ });

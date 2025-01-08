@@ -1,3 +1,4 @@
+
 class Character extends MovableObject {
   y = 85;
   height = 235;
@@ -46,6 +47,9 @@ class Character extends MovableObject {
 
   world;
   walking_sound = new Audio("audio/running.mp3");
+  jumping_sound = new Audio("audio/jumping.mp3");
+  sounds = []; 
+  isMuted = false;
 
   constructor() {
     super().loadImage("img/2_character_pepe/2_walk/W-21.png"),
@@ -54,20 +58,15 @@ class Character extends MovableObject {
       this.loadImages(this.IMAGES_DEAD);
       this.loadImages(this.IMAGES_HURT);
       this.collisionCooldown = false;
-
+      this.sounds = [this.walking_sound, this.jumping_sound];
       this.animate();
       this.applyGravaty();
   }
-  // addBottle() {
-  //   this.energyBottle += 23; // Erhöht die Flaschenenergie
-  //   if (this.energyBottle > 100) {
-  //     this.energyBottle = 100;
-  //   } else {
-  //     this.lastHit = new Date().getTime();
-  //   }
-  //   this.availableBottles = Math.min(this.availableBottles + 1, 5); // Maximal 5 Flaschen verfügbar
-  //   this.world.bottleBar.setBottlePercentage(this.availableBottles * 23); // Aktualisiere die Bar
-  // }
+
+  toggleMute() {
+    this.isMuted = true;
+    this.sounds.forEach(sounds => sounds.muted = this.isMuted);
+}
 
   addBottle() {
     this.availableBottles = Math.min(this.availableBottles + 1, 5); // Maximal 5 Flaschen
@@ -79,9 +78,6 @@ class Character extends MovableObject {
     this.energyCoin = this.availableCoins * 20; // Prozentwert anpassen
     this.world.coinBar.setCoinPercentage(this.energyCoin); // Bar aktualisieren
   }
-
-
-
   animate() {
     setInterval(() => { 
       this.walking_sound.pause();
@@ -96,9 +92,9 @@ class Character extends MovableObject {
           this.walking_sound.play();
           this.otherDirection = true;
       }
-
-      if(this.world.keyboard.UP && !this.isAboveGround() || world.keyboard.SPACE && !this.isAboveGround() ){
+     else if( world.keyboard.SPACE && !this.isAboveGround() ){
         this.jump();
+        this.jumping_sound.play();
     }
 
       this.world.camera_x = -this.x + 50;
@@ -119,8 +115,8 @@ class Character extends MovableObject {
         }
       }
     }, 50);
-  }
 
+  }
   jump() {
     this.speedY = 30; // Charakter springt
     this.checkDamageOnJump(); // Überprüfe, ob Gegner getroffen werden
@@ -141,4 +137,5 @@ class Character extends MovableObject {
       this.collisionCooldown = false; // Cooldown nach 200ms zurücksetzen
     }, 200);
   }
+
 }

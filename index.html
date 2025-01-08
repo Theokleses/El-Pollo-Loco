@@ -19,7 +19,7 @@
     <script src="models/bottle.class.js"></script>
     <script src="models/world.class.js"></script>
     <script src="models/background-object.class.js"></script>
-    <script src="models/keyboard.class.js"></script>
+    <script src="models/keyboard.class.js" defer></script>
     <script src="models/level.class.js"></script>
     <script src="models/throwable-object.class.js"></script>
     <script src="models/endboss.class.js"></script>
@@ -28,17 +28,36 @@
     <script src="models/win-screen.class.js"></script>
     <script src="models/start-screen.class.js"></script>
     <script src="models/start-button.class.js"></script>
-    <script src="js/game.js"></script>
+    <script src="js/game.js" defer></script>
     <script src="js/listeners.js"></script>
 </head>
 
 <body onload="init()">
     <h1>El Pollo Loco</h1>
     <canvas id="canvas" width="720" height="480"></canvas>
-
-    <div class="key-explanation">
+    <div class="overlay">
+        <div id="hud" class="background-cover">
+            <div class="panel"></div>
+            <div class="panel">
+                <div class="panel-wrapper">
+                    <button id='btnLeft'></button>
+                    <button id='btnRight'></button>
+                </div>
+                <div class="panel-wrapper">
+                    <button id='btnJump'></button>
+                    <button id='btnThrow'></button>
+                    <button id="btnSoundToggle">Sound</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="muteButton">Mute</button>
+    <audio id="audio" controls>
+        <source src="audio/running.mp3" type="audio/mpeg">
+    </audio>
+    <!-- <div class="key-explanation">
     <div style="font-family: Arial, sans-serif; line-height: 1.6;">
         <h3>Game Controls:</h3> 
-</div> 
+</div>  -->
 </body>
 </html>

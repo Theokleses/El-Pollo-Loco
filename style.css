@@ -23,37 +23,65 @@ h1 {
 @font-face {
   font-family: 'zabras';
   src: url('fonts/zabars.ttf') format('truetype')
-}  
-.arrow-keys {
-  height: 100px;
 }
-.key-explanation {
+button {
+  height: 50px;
+}  
+.overlay {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100%;
 }
 
-  #start-screen {
-    position: absolute;
-    top: 0;
-    left: 0;
+#hud {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px; /* Abstand zwischen den Button-Panels */
+}
+
+.panel-wrapper {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px; /* Abstand zwischen den Buttons */
+}
+
+button {
+  width: 50px;
+  height: 50px;
+  background-color: #ddd;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.d_none {
+    display: none; 
+}
+ 
+@media only screen and (max-width: 720px) {
+  canvas {
     width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
+  }
+  body{
     justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    z-index: 10;
   }
-  #start-screen img {
-    max-width: 80%;
-    margin-bottom: 20px;
-  }
-  #start-screen button {
-    padding: 10px 20px;
-    font-size: 18px;
-    cursor: pointer;
-  }
-  .d_none {
+  h1{
     display: none;
   }
- 
+}
+
+@media only screen and (max-width: 480px) {
+  canvas {
+    height: 100vh;
+  }
+}
