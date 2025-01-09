@@ -6,7 +6,7 @@ class LoseScreen extends DrawableObject{
     startGameButton = new StartButton();
 
     constructor() {
-        super().loadImage("img/9_intro_outro_screens/game_over/game over.png");      
+        super().loadImage("img/9_intro_outro_screens/game_over/game over.png");  
     }
 
 }

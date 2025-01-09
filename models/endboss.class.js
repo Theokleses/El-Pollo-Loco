@@ -57,14 +57,13 @@ class Endboss extends MovableObject{
         this.x = 2500;
         this.stateAlert = true;
         this.animate();
-
+        this.sounds = [this.win_sound]; 
     }
 
     changeSpeed(speed) {
         this.speed = speed;
         
     }
-    
 
     animate() {
         setInterval(() => {
@@ -72,59 +71,21 @@ class Endboss extends MovableObject{
                 this.playAnimation(this.IMAGES_DEAD);
             } else if (this.isHurt()) {
                 this.changeSpeed(20);
-                this.stateAlert = false; // Endboss ist nicht mehr im Alert-Zustand
+                this.stateAlert = false;
                 this.playAnimation(this.IMAGES_HURT);
             } else if (this.stateAlert) {
                 this.playAnimation(this.IMAGES_ALERT);
             } else {
                 this.moveLeft();
-                // Walk- und Attack-Animation nacheinander abspielen
-                this.playAnimation(this.IMAGES_WALK); // Erst Walk
+                this.playAnimation(this.IMAGES_WALK); 
                 setTimeout(() => {
-                    this.playAnimation(this.IMAGES_ATTACK); // Dann Attack
-                }, 50); // 500ms Verzögerung (nach Walk)
+                    this.playAnimation(this.IMAGES_ATTACK); 
+                }, 50); 
             }
-        }, 200); // Einheitliche Taktung
+        }, 200); 
     }    
 
 }
-
-
-
-
-
-
-
-// animate() {
-    //     setInterval(() =>{
-    //         this.playAnimation(this.IMAGES_ALERT);
-    //         if (this.isHurt()) {
-    //         this.playAnimation(this.IMAGES_HURT) && this.playAnimation(this.IMAGES_WALK);;  
-    //         }else if(this.isDead()){
-    //         this.playAnimation(this.IMAGES_DEAD);    
-    //         }
-    //     }, 200);
-    //   }
-    
-    // animate() {
-    //     setInterval(() => {
-    //         if (this.isDead()) {
-    //             this.playAnimation(this.IMAGES_DEAD);
-    //         } else if (this.isHurt()) {
-    //             this.stateAlert = false; // Endboss ist nicht mehr im Alert-Zustand
-    //             this.playAnimation(this.IMAGES_HURT);
-    //         } else if (this.stateAlert) {
-    //             this.playAnimation(this.IMAGES_ALERT);
-    //         } else {
-    //             setInterval(() => {
-    //                 this.moveLeft(); 
-                
-    //             }, 1000 / 60);
-    //             this.playAnimation(this.IMAGES_WALK);
-    //             this.playAnimation(this.IMAGES_ATTACK);
-    //         }
-    //     }, 200); // Einheitliche Taktung
-    // }
     
 
 

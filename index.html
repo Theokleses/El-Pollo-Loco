@@ -34,30 +34,40 @@
 
 <body onload="init()">
     <h1>El Pollo Loco</h1>
-    <canvas id="canvas" width="720" height="480"></canvas>
-    <div class="overlay">
-        <div id="hud" class="background-cover">
-            <div class="panel"></div>
-            <div class="panel">
-                <div class="panel-wrapper">
-                    <button id='btnLeft'></button>
-                    <button id='btnRight'></button>
-                </div>
-                <div class="panel-wrapper">
-                    <button id='btnJump'></button>
-                    <button id='btnThrow'></button>
-                    <button id="btnSoundToggle">Sound</button>
-                </div>
+        <div class="canvas-class">
+            <canvas id="canvas" width="720" height="480"></canvas>
+            <div class="canvas-button">
+              <button class="toggle-button">Guide</button>
+              <button id="muteButton">Sound</button>
             </div>
-        </div>
-    </div>
-    <button id="muteButton">Mute</button>
-    <audio id="audio" controls>
-        <source src="audio/running.mp3" type="audio/mpeg">
-    </audio>
-    <!-- <div class="key-explanation">
-    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-        <h3>Game Controls:</h3> 
-</div>  -->
+          </div>
+          
+          <div class="overlay d_none">
+            <div id="hud" class="background-cover">
+              <div class="panel">
+                <div class="panel-wrapper-left">
+                  <button id='btnLeft'>Left</button>
+                  <button id='btnRight'>Right</button>
+                </div>
+                <div class="panel-wrapper-center">
+                  <button class="muteButton">Sound</button> 
+                  <button class="toggle-button">Guide</button>
+                </div>
+                <div class="panel-wrapper-right">
+                  <button id='btnJump'>Jump</button>
+                  <button id='btnThrow'>Throw</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+      
+      <h3 id="game-controls" class="d_none">Game Controls:</h3>
+      <div id="instruction-details" class="instructions d_none">
+        <p><span class="icon">→</span> <span class="key">Move Right</span></p>
+        <p><span class="icon">←</span> <span class="key">Move Left</span></p>
+        <p><span class="icon">↑</span> <span class="key">Jump</span></p>
+        <p><span class="icon">D</span> <span class="key">Throw</span></p>
+      </div>
 </body>
 </html>

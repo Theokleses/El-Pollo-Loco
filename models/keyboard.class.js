@@ -15,7 +15,6 @@ class Keyboard {
 
     bindKeyPressEvents() {
         window.addEventListener('keydown', (event) =>{
-            console.log(event.keyCode);
             
               if(event.keyCode == 39) {
                  keyboard.RIGHT = true;
@@ -97,12 +96,12 @@ class Keyboard {
             if (btnJump) {
                 btnJump.addEventListener('touchstart', (event) => {
                     event.preventDefault();
-                    this.SPACE = true;
+                    this.UP = true;
                 });
         
                 btnJump.addEventListener('touchend', (event) => {
                     event.preventDefault();
-                    this.SPACE = false;
+                    this.UP = false;
                 });
             }
         
@@ -119,50 +118,5 @@ class Keyboard {
             }
         }
         
-    
-// bindBtsPressEvents() {
-//     document.getElementById('btnLeft').addEventListener('touchstart', (event) => {
-//         event.preventDefault();
-//         this.LEFT = true;
-//  });
- 
-//     document.getElementById('btnLeft').addEventListener('touchend', (event) => {
-//         event.preventDefault();
-//         this.LEFT = false;
-//  });
- 
-//     document.getElementById('btnRight').addEventListener('touchstart', (event) => {
-//         event.preventDefault();
-//         this.RIGHT = true;
-//  });
- 
-//     document.getElementById('btnRight').addEventListener('touchend', (event) => {
-//         event.preventDefault();
-//         this.RIGHT = false;
-//  });
- 
- 
-//     document.getElementById('btnJump').addEventListener('touchstart', (event) => {
-//         event.preventDefault();
-//         this.SPACE = true;
-//  });
- 
-//     document.getElementById('btnJump').addEventListener('touchend', (event) => {
-//         event.preventDefault();
-//         this.SPACE = false;
-//  });
-//     document.getElementById('btnThrow').addEventListener('touchstart', (event) => {
-//         event.preventDefault();
-//         this.D = true;
-//  });
- 
-//     document.getElementById('btnThrow').addEventListener('touchend', (event) => {
-//         event.preventDefault();
-//         this.D = false;
-//  });
-//  }
- 
-
-
     }
 

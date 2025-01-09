@@ -19,7 +19,7 @@ class BottleBar extends DrawableObject{
     }
     
     setBottlePercentage(percentage) {
-        this.percentage = Math.max(0, Math.min(percentage, 100)); // Clamp zwischen 0 und 100
+        this.percentage = Math.max(0, Math.min(percentage, 100));
         let path = this.IMAGES[this.resolveImageIndex()];
         this.img = this.imageCache[path];
     }

@@ -4,8 +4,8 @@ class Character extends MovableObject {
   height = 235;
   width = 120;
   speed = 10;
-  availableBottles = 0; // Neue Variable für verfügbare Flaschen
-  energyBottle = 0; // Bestehende Variable für die Statusleiste
+  availableBottles = 0;
+  energyBottle = 0;
   availableCoins = 0;
   energyCoin = 0;
   IMAGES_WALKING = [
@@ -46,10 +46,7 @@ class Character extends MovableObject {
   ];
 
   world;
-  walking_sound = new Audio("audio/running.mp3");
-  jumping_sound = new Audio("audio/jumping.mp3");
-  sounds = []; 
-  isMuted = false;
+
 
   constructor() {
     super().loadImage("img/2_character_pepe/2_walk/W-21.png"),
@@ -58,26 +55,22 @@ class Character extends MovableObject {
       this.loadImages(this.IMAGES_DEAD);
       this.loadImages(this.IMAGES_HURT);
       this.collisionCooldown = false;
-      this.sounds = [this.walking_sound, this.jumping_sound];
+      this.sounds = [this.walking_sound, this.jumping_sound, this.lose_sound, this.walking_sound];
       this.animate();
       this.applyGravaty();
   }
 
-  toggleMute() {
-    this.isMuted = true;
-    this.sounds.forEach(sounds => sounds.muted = this.isMuted);
-}
-
   addBottle() {
-    this.availableBottles = Math.min(this.availableBottles + 1, 5); // Maximal 5 Flaschen
-    this.energyBottle = this.availableBottles * 20; // Prozentwert anpassen
-    this.world.bottleBar.setBottlePercentage(this.energyBottle); // Bar aktualisieren
+    this.availableBottles = Math.min(this.availableBottles + 1, 5); 
+    this.energyBottle = this.availableBottles * 20; 
+    this.world.bottleBar.setBottlePercentage(this.energyBottle); 
 }
   addCoin() {
-    this.availableCoins = Math.min(this.availableCoins + 1, 5); // Maximal 5 Flaschen
-    this.energyCoin = this.availableCoins * 20; // Prozentwert anpassen
-    this.world.coinBar.setCoinPercentage(this.energyCoin); // Bar aktualisieren
+    this.availableCoins = Math.min(this.availableCoins + 1, 5); 
+    this.energyCoin = this.availableCoins * 20; 
+    this.world.coinBar.setCoinPercentage(this.energyCoin); 
   }
+
   animate() {
     setInterval(() => { 
       this.walking_sound.pause();
@@ -86,13 +79,12 @@ class Character extends MovableObject {
           this.walking_sound.play();
           this.otherDirection = false;
       }
-
       if (this.world.keyboard.LEFT && this.x > 0) {
           this.moveLeft();
           this.walking_sound.play();
           this.otherDirection = true;
       }
-     else if( world.keyboard.SPACE && !this.isAboveGround() ){
+     else if (world.keyboard.UP && !this.isAboveGround() ){
         this.jump();
         this.jumping_sound.play();
     }
@@ -110,31 +102,30 @@ class Character extends MovableObject {
             this.playAnimation(this.IMAGES_JUMPING);
         } else {
             if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-              // Walk animation
                 this.playAnimation(this.IMAGES_WALKING);
         }
       }
     }, 50);
 
   }
+
   jump() {
-    this.speedY = 30; // Charakter springt
-    this.checkDamageOnJump(); // Überprüfe, ob Gegner getroffen werden
+    this.speedY = 30; 
+    this.checkDamageOnJump(); 
   }
 
   checkDamageOnJump() {
     this.world.level.enemies.forEach((enemy) => {
       if (this.isColliding(enemy) && this.isAboveGround()) {
-        enemy.energy = 0; // Gegner stirbt sofort
-        this.world.level.enemies = this.world.level.enemies.filter(e => e.energy > 0); // Entferne tote Gegner
+        enemy.energy = 0;
+        this.world.level.enemies = this.world.level.enemies.filter(e => e.energy > 0); 
       }
     });
   }
 
-
   resetCollisionCooldown() {
     setTimeout(() => {
-      this.collisionCooldown = false; // Cooldown nach 200ms zurücksetzen
+      this.collisionCooldown = false; 
     }, 200);
   }
 

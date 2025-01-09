@@ -26,9 +26,8 @@ class ThrowableObject extends MovableObject {
         this.height = 60;
         this.width = 70;
         this.currentImageIndex = 0;
-        this.hasCollided = false; // Kollisionsstatus
-        this.hasHitGround = false; // Bodenstatus
-        this.flaschenPositionen = [];
+        this.hasCollided = false;
+        this.hasHitGround = false; 
         this.trow();
         this.animate();
     }
@@ -38,34 +37,21 @@ trow() {
     this.applyGravaty();
     let interval = setInterval(() => {
         if (this.isAboveGround()) {
-            this.x += 3 + Math.random() * 15; // Bewegung nach rechts bleibt konstant
+            this.x += 3 + Math.random() * 15; 
         } else {
-            clearInterval(interval); // Stoppe die horizontale Bewegung
+            clearInterval(interval); 
         }
     }, 25);
 }
-
-    
-    // trow() {
-    //     this.speedY = 30;
-    //     this.applyGravaty();
-    //     setInterval(() => {
-    //         this.x += 10;
-    //     }, 25);
-    // }
-    
     animate() {
         setInterval(() => {
             if (this.hasCollided) {
-                // Zeige Splash-Animation
                 this.currentImageIndex = (this.currentImageIndex + 1) % this.BOTTLE_SPLASH.length;
                 this.loadImage(this.BOTTLE_SPLASH[this.currentImageIndex]);
             } else if (!this.isAboveGround()) {
-                // Zeige Boden-Animation, wenn die Flasche den Boden erreicht
                 this.loadImage(this.BOTTLE_GROUND[0]);
                 this.hasHitGround = true;
             } else {
-                // Zeige Rotations-Animation
                 this.currentImageIndex = (this.currentImageIndex + 1) % this.BOTTLE_ROTATE.length;
                 this.loadImage(this.BOTTLE_ROTATE[this.currentImageIndex]);
             }

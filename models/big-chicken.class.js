@@ -2,7 +2,8 @@ class BigChicken extends MovableObject {
     y = 320;
     height = 90;
     width = 70;
-    energy = 2; // Hühner sterben mit einem Schlag
+    energy = 2; 
+    
     IMAGES_WALKING = [
       "img/3_enemies_chicken/chicken_small/1_walk/1_w.png",
       "img/3_enemies_chicken/chicken_small/1_walk/2_w.png",
@@ -31,9 +32,9 @@ class BigChicken extends MovableObject {
   
       setInterval(() => {
         if (this.isDead()) {
-          this.playAnimation(this.IMAGE_DEAD); // Zeige das tote Bild an
+          this.playAnimation(this.IMAGE_DEAD); 
         } else {
-          this.playAnimation(this.IMAGES_WALKING); // Zeige die Laufanimation
+          this.playAnimation(this.IMAGES_WALKING);
         }
       }, 100);
     }

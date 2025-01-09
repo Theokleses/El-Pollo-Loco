@@ -9,7 +9,6 @@ class StatusBar extends DrawableObject {
   ];
 
   percentage = 100;
-  // setPercentage(50);
 
   constructor() {
     super();
@@ -22,7 +21,7 @@ class StatusBar extends DrawableObject {
   }
 
   setPercentage(percentage) {
-    this.percentage = percentage; // => ... 5
+    this.percentage = percentage; 
     let path = this.IMAGES[this.resolveImageIndex()];
     this.img = this.imageCache[path];
     console.log(`Character's current life: ${this.percentage}%`);
