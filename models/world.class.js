@@ -19,6 +19,7 @@ class World {
   sounds = []; 
   isMuted = false;
   throwing_sound = new Audio("audio/throwing.mp3");
+   
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -26,7 +27,7 @@ class World {
     this.keyboard = keyboard;
     this.character.world = this;
     this.sounds = [this.throwing_sound];
-    this.level = null;;
+    this.level = null;
     this.draw();
   }
 
@@ -35,6 +36,7 @@ class World {
       this.checkCollisions();
       this.checkThrowObejects();
       this.checkCharacterPosition();
+      this.checkEndbossDistance();
     }, 100);
     
   }
@@ -42,6 +44,7 @@ class World {
   setWorld() {
     firstLevel();
     this.level = level1;
+    this.endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
     this.Spawner();
     this.run();
   }
@@ -107,79 +110,100 @@ checkThrowObejects() {
       this.bottleBar.setBottlePercentage(this.character.energyBottle);
   }
  }
- 
-  checkCollisions() {
-    for (let i = this.level.enemies.length - 1; i >= 0; i--) {
-      const enemy = this.level.enemies[i];
-      if (this.character.isColliding(enemy) && enemy.energy > 0) {
-        if(enemy instanceof Endboss){
-          enemy.changeSpeed(0);
-          setTimeout(() => {
-            enemy.changeSpeed(30);
-          }, 1000);
-        }
-        if (!this.character.collisionCooldown) { 
-          this.character.collisionCooldown = true;
-          if (this.character.speedY < 0 && this.character.isAboveGround() && this.character.isLegsColliding(enemy)) {
-            enemy.energy--;
-            if (enemy.energy <= 0) {
-              setTimeout(() => {
-                this.level.enemies.splice(i, 1); 
-              }, 250);
-            }
-          } else {
-            this.character.hit(); 
-            this.statusBar.setPercentage(this.character.energy); 
+
+ checkEndbossDistance() {
+  const endbossDistance = 500; 
+  if (Math.abs(this.character.x - this.endboss.x) < endbossDistance) {
+      this.endboss.stateAlert = false; 
+  } else {
+      this.endboss.stateAlert = true;
+  }
+}
+
+checkCollisions() {
+  // Prüfen, ob der Charakter "tot" ist, und die Funktion beenden
+  if (this.character.energy <= 0) {
+    return;
+  }
+
+  // Kollision mit Feinden prüfen
+  for (let i = this.level.enemies.length - 1; i >= 0; i--) {
+    const enemy = this.level.enemies[i];
+    if (this.character.isColliding(enemy) && enemy.energy > 0) {
+      if (enemy instanceof Endboss) {
+        enemy.changeSpeed(0); // Endboss anhalten, solange Kollision besteht
+      }
+      if (!this.character.collisionCooldown) {
+        this.character.collisionCooldown = true;
+        if (this.character.speedY < 0 && this.character.isAboveGround() && this.character.isLegsColliding(enemy)) {
+          enemy.energy--;
+          if (enemy.energy <= 0) {
+            setTimeout(() => {
+              this.level.enemies.splice(i, 1); 
+            }, 250);
           }
-          this.character.resetCollisionCooldown(); 
-         }
+        } else {
+          this.character.hit(); 
+          this.statusBar.setPercentage(this.character.energy); 
+        }
+        this.character.resetCollisionCooldown(); 
+      }
+    } else if (enemy instanceof Endboss) {
+      enemy.changeSpeed(60); // Endboss wieder bewegen, wenn keine Kollision mehr
+    }
+  }
+
+  // Kollision mit Münzen prüfen
+  this.level.coins.forEach((coin, index) => {
+    if (this.character.isColliding(coin)) {
+      this.character.addCoin();
+      this.coinBar.setCoinPercentage(this.character.energyCoin);
+      this.level.coins.splice(index, 1);
+    }
+  });
+
+  // Kollision mit Flaschen prüfen
+  this.level.bottles.forEach((bottle, index) => {
+    if (this.character.isColliding(bottle)) {
+      this.character.addBottle();
+      this.bottleBar.setBottlePercentage(this.character.energyBottle);
+      this.level.bottles.splice(index, 1);
+    }
+  });
+
+  // Kollision von geworfenen Objekten mit dem Charakter prüfen
+  this.throwableObjects.forEach((bottle, bottleIndex) => {
+    if (bottle.hasHitGround && this.character.isColliding(bottle)) {
+      this.character.addBottle();
+      this.bottleBar.setBottlePercentage(this.character.energyBottle);
+      this.throwableObjects.splice(bottleIndex, 1);
+    }
+  });
+
+  // Kollision von geworfenen Objekten mit Feinden prüfen
+  this.throwableObjects.forEach((bottle, bottleIndex) => {
+    for (let j = this.level.enemies.length - 1; j >= 0; j--) {
+      const enemy = this.level.enemies[j];
+      if (bottle.isColliding(enemy) && enemy.energy > 0) {
+        bottle.hasCollided = true;  
+        if (enemy instanceof Endboss) {
+          enemy.hit();
+          this.endbossBar.setBossPercentage(enemy.energy);
+        } else {
+          enemy.energy--;
+          if (enemy.energy <= 0) {
+            setTimeout(() => {
+              this.level.enemies.splice(j, 1);
+            }, 250);
+          }
+        }
+        setTimeout(() => {
+          this.throwableObjects.splice(bottleIndex, 1);
+        }, 80);
       }
     }
-    this.level.coins.forEach((coin, index) => {
-      if (this.character.isColliding(coin)) {
-        this.character.addCoin();
-        this.coinBar.setCoinPercentage(this.character.energyCoin);
-        this.level.coins.splice(index, 1);
-      }
-    });
-    this.level.bottles.forEach((bottle, index) => {
-      if (this.character.isColliding(bottle)) {
-        this.character.addBottle();
-        this.bottleBar.setBottlePercentage(this.character.energyBottle);
-        this.level.bottles.splice(index, 1);
-      }
-    });
-    this.throwableObjects.forEach((bottle, bottleIndex) => {
-      if (bottle.hasHitGround && this.character.isColliding(bottle)) {
-        this.character.addBottle();
-        this.bottleBar.setBottlePercentage(this.character.energyBottle);
-        this.throwableObjects.splice(bottleIndex, 1);
-      }
-    });
-    this.throwableObjects.forEach((bottle, bottleIndex) => {
-      for (let j = this.level.enemies.length - 1; j >= 0; j--) {
-        const enemy = this.level.enemies[j];
-  
-        if (bottle.isColliding(enemy) && enemy.energy > 0) {
-          bottle.hasCollided = true;  
-          if (enemy instanceof Endboss) {
-            enemy.hit();
-            this.endbossBar.setBossPercentage(enemy.energy);
-          } else {
-            enemy.energy--;
-            if (enemy.energy <= 0) {
-              setTimeout(() => {
-                this.level.enemies.splice(j, 1);
-              }, 250);
-            }
-          }
-          setTimeout(() => {
-            this.throwableObjects.splice(bottleIndex, 1);
-          }, 80);
-        }
-      }
-    });
-  } 
+  });
+}
 
 draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -232,10 +256,12 @@ draw() {
     });
 }
 
+
   resetGame(){
     this.character.energy = 100;
-    // this.level = level1;
+    this.level = level1;
     this.character.x = 120;
+    // this.character.lastHit = null; // Letzten Treffer zurücksetzen
     damiLevel();
     startNewGame();
   }

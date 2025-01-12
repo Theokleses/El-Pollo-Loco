@@ -46,6 +46,7 @@ class MovableObject extends DrawableObject {
   }
 
   hit() {
+    console.log("Schaden wird zugefügt:", this.constructor.name, "Energie:", this.energy);
     let damage = this instanceof Endboss ? 20 : 5; 
     this.energy -= damage;
   
@@ -54,21 +55,20 @@ class MovableObject extends DrawableObject {
   
         if (this instanceof Character) {
             setTimeout(() => {
-              this.lose_sound.play();
+                this.lose_sound.play();
                 gameState = "Lose"; 
             }, 1000); 
         }
   
         if (this instanceof Endboss) {
             setTimeout(() => {
-              this.win_sound.play();
+                this.win_sound.play();
                 gameState = "Win";     
             }, 1000); 
         }
     }
-  
     this.lastHit = new Date().getTime();
-  }
+}
 
 toggleMute() {
   this.isMuted = !this.isMuted;

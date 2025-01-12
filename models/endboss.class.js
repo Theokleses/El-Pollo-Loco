@@ -60,11 +60,6 @@ class Endboss extends MovableObject{
         this.sounds = [this.win_sound]; 
     }
 
-    changeSpeed(speed) {
-        this.speed = speed;
-        
-    }
-
     animate() {
         setInterval(() => {
             if (this.isDead()) {
@@ -83,7 +78,11 @@ class Endboss extends MovableObject{
                 }, 50); 
             }
         }, 200); 
-    }    
+    } 
+
+    changeSpeed(speed) {
+        this.speed = speed;
+    }
 
 }
     
