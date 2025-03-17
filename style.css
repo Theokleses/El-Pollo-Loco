@@ -1,32 +1,43 @@
-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    overflow: hidden;
-    background-image: url("img/5_background/background2.png");
-    background-size: cover;
-    background-position: center;
-    font-family: 'zabras', Arial, Helvetica, sans-serif;
+@font-face {
+  font-family: "zabras";
+  src: url("fonts/zabars.ttf") format("truetype");
 }
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  background-image: url("img/5_background/background2.png");
+  background-size: cover;
+  background-position: center;
+  font-family: "zabras", Arial, Helvetica, sans-serif;
+}
+
 canvas {
-    background-color: black;
-    display: block;
+  background-color: black;
+  display: block;
 }
 
 h1 {
   font-size: 64px;
   letter-spacing: 3px;
-  text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
 }
-@font-face {
-  font-family: 'zabras';
-  src: url('fonts/zabars.ttf') format('truetype')
-}
+
 button {
   height: 50px;
-}  
+}
+
+a {
+  text-decoration: none;
+  color: black;
+  &:hover {
+    text-decoration: underline;
+  }
+}
 .overlay {
   display: flex;
   justify-content: space-between;
@@ -61,12 +72,12 @@ button {
 }
 
 .d_none {
-    display: none; 
+  display: none;
 }
 
 .canvas-class {
   display: flex;
-  gap: 10px
+  gap: 10px;
 }
 .canvas-button {
   display: flex;
@@ -80,8 +91,8 @@ h3 {
 
 .instructions {
   padding: 10px;
-  background-color: #fff;
-  border: 1px solid #ddd;
+  /* background-color: #fff; */
+  /* border: 1px solid #ddd; */
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -93,7 +104,7 @@ h3 {
 
 .key {
   font-weight: bold;
-  color: #007BFF;
+  color: #007bff;
 }
 
 .icon {
@@ -101,17 +112,38 @@ h3 {
   font-size: 18px;
 }
 
+.main-content {
+  flex: 1;
+  text-align: center;
+}
+.impressum {
+  h2 {
+    font-size: 30px;
+  }
+  p{
+    font-size: 23px;
+    font-weight: bold;
+  }
+  a{
+    color: brown;
+  }
+}
+
+footer {
+  text-align: center;
+}
+
 @media (max-width: 720px) {
   canvas {
     width: 100%;
   }
-  h1{
+  h1 {
     display: none;
   }
-  .overlay{
+  .overlay {
     display: block;
   }
-  .canvas-class button{
+  .canvas-class button {
     display: none;
   }
 }
