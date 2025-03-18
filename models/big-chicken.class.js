@@ -1,5 +1,5 @@
 class BigChicken extends MovableObject {
-    y = 320;
+    y = 340;
     height = 90;
     width = 70;
     energy = 2; 

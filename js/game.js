@@ -14,9 +14,17 @@ function startGame() {
    gameState = "Game";
    world.setWorld();
 }
+// function startNewGame() {
+//    // world = null;
+//    world = new World(canvas, keyboard);
+//    gameState = "Game";
+//    world.setWorld();
+// }
 function startNewGame() {
-   world = null;
-   world = new World(canvas, keyboard);
+   if (world) {
+       world.stopAllIntervals(); // Stoppe alle Intervalle im alten world
+   }
+   world = new World(canvas, keyboard); // Neues World-Objekt
    gameState = "Game";
    world.setWorld();
 }

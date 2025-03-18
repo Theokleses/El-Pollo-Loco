@@ -28,11 +28,10 @@ class ThrowableObject extends MovableObject {
         this.currentImageIndex = 0;
         this.hasCollided = false;
         this.hasHitGround = false; 
-        this.trow();
         this.animate();
     }
 
-trow() {
+throw() {
     this.speedY = 30;
     this.applyGravaty();
     let interval = setInterval(() => {
@@ -43,6 +42,8 @@ trow() {
         }
     }, 25);
 }
+
+
     animate() {
         setInterval(() => {
             if (this.hasCollided) {
