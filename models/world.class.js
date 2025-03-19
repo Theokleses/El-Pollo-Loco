@@ -18,7 +18,9 @@ class World {
   endbossBar = new EndbossBar();
   sounds = [];
   isMuted = false;
+  isMusicPlaying = false;
   throwing_sound = new Audio("audio/throwing.mp3");
+  background_sound = new Audio("audio/throwing.mp3");
   mouseX = 0;
   mouseY = 0;
   lastThrowTime = 0;
@@ -34,7 +36,8 @@ class World {
     this.canvas = canvas;
     this.keyboard = keyboard;
     this.character.world = this;
-    this.sounds = [this.throwing_sound];
+    this.background_sound.loop = true;
+    this.sounds = [this.throwing_sound, this.background_sound];
     this.level = null;
     this.trackMousePosition();
     this.draw();
@@ -312,61 +315,225 @@ checkPermanentBottleCollision() {
     });
   }
 
-  draw() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.canvas.style.cursor = "default";
-    if (gameState == "Start") {
+  // draw() {
+  //   this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  //   this.canvas.style.cursor = "default";
+  //   if (gameState == "Start") {
+  //     this.addToMap(this.startscreen);
+  //     this.startscreen.drawButton(this.ctx, 270, 60, 180, 50, "Start Game");
+  //     buttontoPush = this.startscreen.startGameButton;
+
+  //     if (
+  //       this.startscreen.isMouseOverButton(
+  //         this.mouseX,
+  //         this.mouseY,
+  //         270,
+  //         60,
+  //         180,
+  //         50
+  //       )
+  //     ) {
+  //       this.canvas.style.cursor = "pointer";
+  //     }
+  //   }
+
+  //   if (gameState == "Lose") {
+  //     this.addToMap(this.losescreen);
+  //     this.losescreen.drawButton(this.ctx, 270, 60, 180, 50, "New Game");
+  //     buttontoPush = this.losescreen.startGameButton;
+
+  //     if (
+  //       this.losescreen.isMouseOverButton(
+  //         this.mouseX,
+  //         this.mouseY,
+  //         270,
+  //         60,
+  //         180,
+  //         50
+  //       )
+  //     ) {
+  //       this.canvas.style.cursor = "pointer";
+  //     }
+  //   }
+
+  //   if (gameState == "Win") {
+  //     this.addToMap(this.winscreen);
+  //     this.winscreen.drawButton(this.ctx, 270, 60, 180, 50, "New Game");
+  //     buttontoPush = this.winscreen.startGameButton;
+
+  //     if (
+  //       this.winscreen.isMouseOverButton(this.mouseX,this.mouseY,270,60,180,50)
+  //     ) {
+  //       this.canvas.style.cursor = "pointer";
+  //     }
+  //   }
+
+  //   if (gameState == "Game") {
+  //     this.canvas.style.cursor = "default";
+  //     this.ctx.translate(this.camera_x, 0);
+  //     this.addObjectToMap(this.level.backgroundObjects);
+
+  //     this.ctx.translate(-this.camera_x, 0);
+  //     this.addToMap(this.statusBar);
+  //     this.addToMap(this.coinBar);
+  //     this.addToMap(this.bottleBar);
+  //     if (this.reachEndBoss == true) {
+  //       this.addToMap(this.endbossBar);
+  //     }
+
+  //     this.ctx.translate(this.camera_x, 0);
+
+  //     this.addToMap(this.character);
+  //     this.addObjectToMap(this.level.coins);
+  //     this.addObjectToMap(this.level.bottles);
+  //     this.addToMap(this.permanentBottle);
+  //     this.permanentBottle.drawText(this.ctx);
+  //     this.addObjectToMap(this.level.clouds);
+  //     this.addObjectToMap(this.level.enemies);
+  //     this.addObjectToMap(this.throwableObjects);
+
+  //     this.ctx.translate(-this.camera_x, 0);
+  //   }
+
+  //   let self = this;
+  //   requestAnimationFrame(function () {
+  //     self.draw();
+  //   });
+  // }
+
+
+
+//   draw() {
+//     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+//     this.canvas.style.cursor = 'default';
+
+//     if (gameState == "Start") {
+//         this.addToMap(this.startscreen);
+//         const isHovered = this.startscreen.isMouseOverButton(this.mouseX, this.mouseY, 270, 45, 180, 50);
+//         this.startscreen.drawButton(this.ctx, 270, 45, 180, 50, "Start Game", {}, isHovered);
+//         buttontoPush = this.startscreen.startGameButton;
+//         if (isHovered) {
+//             this.canvas.style.cursor = 'pointer';
+//         }
+//     }
+
+//     if (gameState == "Lose") {
+//         this.addToMap(this.losescreen);
+//         const isHovered = this.losescreen.isMouseOverButton(this.mouseX, this.mouseY, 270, 45, 180, 50);
+//         this.losescreen.drawButton(this.ctx, 270, 45, 180, 50, "New Game", {}, isHovered);
+//         buttontoPush = this.losescreen.startGameButton;
+//         if (isHovered) {
+//             this.canvas.style.cursor = 'pointer'; 
+//         }
+//     }
+
+//     if (gameState == "Win") {
+//         this.addToMap(this.winscreen);
+//         const isHovered = this.winscreen.isMouseOverButton(this.mouseX, this.mouseY, 270, 45, 180, 50);
+//         this.winscreen.drawButton(this.ctx, 270, 45, 180, 50, "New Game", {}, isHovered);
+//         buttontoPush = this.winscreen.startGameButton;
+//         if (isHovered) {
+//             this.canvas.style.cursor = 'pointer'; 
+//         }
+//     }
+
+//     if (gameState == "Game") {
+//         this.canvas.style.cursor = 'default';
+//         this.ctx.translate(this.camera_x, 0);
+//         this.addObjectToMap(this.level.backgroundObjects);
+
+//         this.ctx.translate(-this.camera_x, 0);
+//         this.addToMap(this.statusBar);
+//         this.addToMap(this.coinBar);
+//         this.addToMap(this.bottleBar);
+//         if (this.reachEndBoss == true) {
+//             this.addToMap(this.endbossBar);
+//         }
+
+//         this.ctx.translate(this.camera_x, 0);
+
+//         this.addToMap(this.character);
+//         this.addObjectToMap(this.level.coins);
+//         this.addObjectToMap(this.level.bottles);
+//         this.addToMap(this.permanentBottle);
+//         this.permanentBottle.drawText(this.ctx);
+//         this.addObjectToMap(this.level.clouds);
+//         this.addObjectToMap(this.level.enemies);
+//         this.addObjectToMap(this.throwableObjects);
+
+//         this.ctx.translate(-this.camera_x, 0);
+//     }
+
+//     let self = this;
+//     requestAnimationFrame(function () {
+//         self.draw();
+//     });
+// }
+
+
+draw() {
+  this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  this.canvas.style.cursor = 'default';
+
+  if (gameState == "Start") {
       this.addToMap(this.startscreen);
-      this.startscreen.drawButton(this.ctx, 270, 60, 180, 50, "Start Game");
+      const isHovered = this.startscreen.isMouseOverButton(this.mouseX, this.mouseY, 270, 45, 180, 50);
+      this.startscreen.drawButton(this.ctx, 270, 45, 180, 50, "Start Game", {}, isHovered);
       buttontoPush = this.startscreen.startGameButton;
-
-      if (
-        this.startscreen.isMouseOverButton(
-          this.mouseX,
-          this.mouseY,
-          270,
-          60,
-          180,
-          50
-        )
-      ) {
-        this.canvas.style.cursor = "pointer";
+      if (isHovered) {
+          this.canvas.style.cursor = 'pointer';
       }
-    }
+      // Musik stoppen, wenn im Start-Screen
+      if (this.isMusicPlaying) {
+          this.background_sound.pause();
+          this.isMusicPlaying = false;
+          console.log('Background music paused in Start screen');
+      }
+  }
 
-    if (gameState == "Lose") {
+  if (gameState == "Lose") {
       this.addToMap(this.losescreen);
-      this.losescreen.drawButton(this.ctx, 270, 60, 180, 50, "New Game");
+      const isHovered = this.losescreen.isMouseOverButton(this.mouseX, this.mouseY, 270, 45, 180, 50);
+      this.losescreen.drawButton(this.ctx, 270, 45, 180, 50, "New Game", {}, isHovered);
       buttontoPush = this.losescreen.startGameButton;
-
-      if (
-        this.losescreen.isMouseOverButton(
-          this.mouseX,
-          this.mouseY,
-          270,
-          60,
-          180,
-          50
-        )
-      ) {
-        this.canvas.style.cursor = "pointer";
+      if (isHovered) {
+          this.canvas.style.cursor = 'pointer'; 
       }
-    }
+      // Musik stoppen, wenn im Lose-Screen
+      if (this.isMusicPlaying) {
+          this.background_sound.pause();
+          this.isMusicPlaying = false;
+          console.log('Background music paused in Lose screen');
+      }
+  }
 
-    if (gameState == "Win") {
+  if (gameState == "Win") {
       this.addToMap(this.winscreen);
-      this.winscreen.drawButton(this.ctx, 270, 60, 180, 50, "New Game");
+      const isHovered = this.winscreen.isMouseOverButton(this.mouseX, this.mouseY, 270, 45, 180, 50);
+      this.winscreen.drawButton(this.ctx, 270, 45, 180, 50, "New Game", {}, isHovered);
       buttontoPush = this.winscreen.startGameButton;
-
-      if (
-        this.winscreen.isMouseOverButton(this.mouseX,this.mouseY,270,60,180,50)
-      ) {
-        this.canvas.style.cursor = "pointer";
+      if (isHovered) {
+          this.canvas.style.cursor = 'pointer'; 
       }
-    }
+      // Musik stoppen, wenn im Win-Screen
+      if (this.isMusicPlaying) {
+          this.background_sound.pause();
+          this.isMusicPlaying = false;
+          console.log('Background music paused in Win screen');
+      }
+  }
 
-    if (gameState == "Game") {
-      this.canvas.style.cursor = "default";
+  if (gameState == "Game") {
+      // Musik abspielen, wenn das Spiel startet
+      if (!this.isMusicPlaying) {
+          this.background_sound.play().catch(error => {
+              console.error('Error playing background music:', error);
+          });
+          this.isMusicPlaying = true;
+          console.log('Background music started');
+      }
+
+      this.canvas.style.cursor = 'default';
       this.ctx.translate(this.camera_x, 0);
       this.addObjectToMap(this.level.backgroundObjects);
 
@@ -375,7 +542,7 @@ checkPermanentBottleCollision() {
       this.addToMap(this.coinBar);
       this.addToMap(this.bottleBar);
       if (this.reachEndBoss == true) {
-        this.addToMap(this.endbossBar);
+          this.addToMap(this.endbossBar);
       }
 
       this.ctx.translate(this.camera_x, 0);
@@ -384,18 +551,19 @@ checkPermanentBottleCollision() {
       this.addObjectToMap(this.level.coins);
       this.addObjectToMap(this.level.bottles);
       this.addToMap(this.permanentBottle);
+      this.permanentBottle.drawText(this.ctx);
       this.addObjectToMap(this.level.clouds);
       this.addObjectToMap(this.level.enemies);
       this.addObjectToMap(this.throwableObjects);
 
       this.ctx.translate(-this.camera_x, 0);
-    }
-
-    let self = this;
-    requestAnimationFrame(function () {
-      self.draw();
-    });
   }
+
+  let self = this;
+  requestAnimationFrame(function () {
+      self.draw();
+  });
+}
   // resetGame() {
   //   this.character.energy = 100;
   //   this.level = level1;

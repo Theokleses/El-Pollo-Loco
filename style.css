@@ -3,6 +3,11 @@
   src: url("fonts/zabars.ttf") format("truetype");
 }
 
+@font-face {
+  font-family: "Bangers";
+  src: url("fonts/Bangers.ttf") format("truetype");
+}
+
 body {
   display: flex;
   flex-direction: column;
@@ -23,7 +28,7 @@ canvas {
 
 h1 {
   font-size: 64px;
-  letter-spacing: 3px;
+  letter-spacing: 5px;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
 }
 
@@ -33,7 +38,7 @@ button {
 
 a {
   text-decoration: none;
-  color: black;
+  color: brown;
   &:hover {
     text-decoration: underline;
   }
@@ -85,33 +90,87 @@ button {
   gap: 10px;
 }
 h3 {
-  color: #333;
-  margin-bottom: 10px;
+  font-size: 40px;
+  margin: 0;
+  margin-top: 10px;
+  color: brown;
 }
 
 .instructions {
   padding: 10px;
-  /* background-color: #fff; */
-  /* border: 1px solid #ddd; */
   border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;    
+  align-items: center;
+  gap: 20px;
 }
 
 .instructions p {
-  margin: 5px 0;
-  font-size: 16px;
+  display: flex;
+  flex-direction: column; /* Icon und Text untereinander */
+  align-items: center; /* Zentriert Icon und Text horizontal */
+  gap: 5px; /* Kleiner Abstand zwischen Icon und Text */
 }
 
 .key {
   font-weight: bold;
-  color: #007bff;
+  color: #d55252;
+  font-size: 22px;
 }
 
-.icon {
+.icon img{
   color: #555;
-  font-size: 18px;
+  height: 60px;
+}
+.iconrt img {
+  height: 60px;
+  transform: rotate(
+    90deg
+  ); 
+}
+.icond img{
+  height: 70px;
+}
+.toggle-button {
+  background: none; /* Entfernt den Standard-Hintergrund */
+  border: none; /* Entfernt den Standard-Rahmen */
+  cursor: pointer;
+  padding: 5px; /* Abstand um das Icon */
 }
 
+.button-icon {
+  width: 50px; /* Größe des Icons anpassen */
+  height: 50px;
+  transition: transform 0.3s ease; /* Sanfte Animation für Hover */
+}
+
+.guide-button:hover .button-icon {
+  transform: scale(1.1); /* Vergrößert das Icon bei Hover */
+  filter: brightness(0.8); /* Macht das Icon etwas dunkler, passend zum Spielstil */
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.button-icon {
+  width: 30px;
+  height: 30px;
+  transition: transform 0.3s ease;
+}
+
+.guide-button:hover .button-icon {
+  transform: scale(1.1);
+  filter: brightness(0.8);
+}
+
+.mute-button:hover .button-icon {
+  transform: scale(1.1);
+  filter: brightness(0.8);
+}
 .main-content {
   flex: 1;
   text-align: center;
@@ -120,12 +179,9 @@ h3 {
   h2 {
     font-size: 30px;
   }
-  p{
+  p {
     font-size: 23px;
     font-weight: bold;
-  }
-  a{
-    color: brown;
   }
 }
 

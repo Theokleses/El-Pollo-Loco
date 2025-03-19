@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/x-icon" href="./img/favicon.ico">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/x-icon" href="./img/favicon.ico" />
     <title>El Pollo Loco</title>
     <script src="models/drawable-object.class.js"></script>
     <script src="models/movable-object.class.js"></script>
@@ -32,53 +32,99 @@
     <script src="models/start-button.class.js"></script>
     <script src="js/game.js" defer></script>
     <script src="js/listeners.js"></script>
-</head>
+  </head>
 
-<body onload="init()">
-  <div class="main-content">
-    <h1><a>El Pollo Loco</a></h1>
-        <div class="canvas-class">
-            <canvas id="canvas" width="720" height="480"></canvas>
-            <div class="canvas-button">
-              <button class="toggle-button">Guide</button>
-              <!-- <img src="img\extentions\controller.png" class="toggle-button"alt="Controller"> -->
-              <button id="muteButton">Sound</button>
+  <body onload="init()">
+    <div class="main-content">
+      <h1><a>El Pollo Loco</a></h1>
+      <div class="canvas-class">
+        <canvas id="canvas" width="720" height="480"></canvas>
+        <div class="canvas-button">
+          <button class="toggle-button guide-button">
+            <img
+              id="guide-icon-main"
+              src="img\icons\controller3.png"
+              alt="Guide-icon"
+              class="button-icon"
+            />
+          </button>
+          <button id="muteButton" class="toggle-button mute-button">
+            <img
+              id="mute-icon-main"
+              src="img/icons/sound.png"
+              alt="Sound-icon"
+              class="button-icon"
+            />
+          </button>
+        </div>
+      </div>
+
+      <div class="overlay d_none">
+        <div id="hud" class="background-cover">
+          <div class="panel">
+            <div class="panel-wrapper-left">
+              <button id="btnLeft">Left</button>
+              <button id="btnRight">Right</button>
+            </div>
+            <div class="panel-wrapper-center">
+              <button class="muteButton toggle-button mute-button">
+                <img
+                  id="mute-icon-overlay"
+                  src="img/icons/sound.png"
+                  alt="Sound-icon"
+                  class="button-icon"
+                />
+              </button>
+              <button class="toggle-button guide-button">
+                <img
+                  id="guide-icon-overlay"
+                  src="img\icons\controller3.png"
+                  alt="Guide-icon"
+                  class="button-icon"
+                />
+              </button>
+            </div>
+            <div class="panel-wrapper-right">
+              <button id="btnJump">Jump</button>
+              <button id="btnThrow">Throw</button>
             </div>
           </div>
-          
-          <div class="overlay d_none">
-            <div id="hud" class="background-cover">
-              <div class="panel">
-                <div class="panel-wrapper-left">
-                  <button id='btnLeft'>Left</button>
-                  <button id='btnRight'>Right</button>
-                </div>
-                <div class="panel-wrapper-center">
-                  <button class="muteButton">Sound</button> 
-                  <button class="toggle-button">Guide</button>
-                </div>
-                <div class="panel-wrapper-right">
-                  <button id='btnJump'>Jump</button>
-                  <button id='btnThrow'>Throw</button>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-      
-      <h3 id="game-controls" class="d_none">Game Controls:</h3>
-      <div id="instruction-details" class="instructions d_none">
-        <p><span class="icon">→</span> <span class="key">Move Right</span></p>
-        <p><span class="icon">←</span> <span class="key">Move Left</span></p>
-        <p><span class="icon">↑</span> <span class="key">Jump</span></p>
-        <p><span class="icon">D</span> <span class="key">Throw</span></p>
+        </div>
+      </div>
+
+      <div class="controls-container d_none">
+        <h3 id="game-controls">Game Controls:</h3>
+        <div id="instruction-details" class="instructions">
+          <p>
+            <span class="icon">
+              <img src="img\icons\circled-right.png" alt="Right-arrow" />
+            </span>
+            <span class="key">Move Right</span>
+          </p>
+          <p>
+            <span class="icon">
+              <img src="img\icons\circled-left.png" alt="Left-arrow" />
+            </span>
+            <span class="key">Move Left</span>
+          </p>
+          <p>
+            <span class="iconrt">
+              <img src="img\icons\circled-left.png" alt="Up-arrow" />
+            </span>
+            <span class="key">Jump Up</span>
+          </p>
+          <p>
+            <span class="icon">
+              <img src="img\icons\d-key2.png" alt="" />
+            </span>
+            <span class="key">Throw</span>
+          </p>
+        </div>
       </div>
     </div>
 
     <footer>
       <a href="impressum.html"><h2>Imprint</h2></a>
     </footer>
-</body>
-
-
+  </body>
 </html>

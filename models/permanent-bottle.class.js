@@ -23,4 +23,11 @@ class PermanentBottle extends MovableObject {
             this.loadImage(this.BOTTLE_ROTATE[this.currentImageIndex]);
         }, 100); 
     }
+
+    drawText(ctx) {
+        ctx.font = "20px zabras"; 
+        ctx.fillStyle = "black"; 
+        ctx.textAlign = "center"; 
+        ctx.fillText("Fill your Bottles here!", this.x + this.width / 2, this.y - 10); 
+    }
 }
