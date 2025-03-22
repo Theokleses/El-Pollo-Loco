@@ -83,10 +83,12 @@ class Character extends MovableObject {
     this.collisionCooldown = false;
     this.isMuted = localStorage.getItem("isMuted") === "true";
     this.sounds.forEach((sound) => (sound.muted = this.isMuted));
-    this.animate();
     this.applyGravaty();
   }
 
+  startAnimation() {
+    this.animate();
+  }
   addBottle() {
     this.availableBottles = Math.min(this.availableBottles + 1, 5);
     this.energyBottle = this.availableBottles * 20;

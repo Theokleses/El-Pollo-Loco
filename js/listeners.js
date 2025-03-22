@@ -1,21 +1,62 @@
-let buttontoPush = "";
+// let buttontoPush = "";
+// let isMuted = false;
+// function addButtonListener() {
+//   canvas.addEventListener("click", (event) => {
+//     const rect = canvas.getBoundingClientRect();
+//     mouseX = event.clientX - rect.left;
+//     mouseY = event.clientY - rect.top;
+//     if (
+//       mouseX >= buttontoPush.x &&
+//       mouseX <= buttontoPush.x + buttontoPush.width &&
+//       mouseY >= buttontoPush.y &&
+//       mouseY <= buttontoPush.y + buttontoPush.height
+//     ) {
+//       if (gameState == "Start") {
+//         startGame();
+//       } else if (gameState == "Lose") {
+//         world.resetGame();
+//       } else if (gameState == "Win") {
+//         world.resetGame();
+//       }
+//     }
+//   });
+// }
+let buttontoPush = {
+  x: 0.4, // 40% der Canvas-Breite
+  y: 0.5, // 50% der Canvas-Höhe
+  width: 0.2, // 20% der Breite
+  height: 0.1, // 10% der Höhe
+};
 let isMuted = false;
+let mouseX, mouseY;
+
 function addButtonListener() {
+  const canvas = document.getElementById("canvas");
   canvas.addEventListener("click", (event) => {
     const rect = canvas.getBoundingClientRect();
-    mouseX = event.clientX - rect.left;
-    mouseY = event.clientY - rect.top;
+    // Skaliere die Mauskoordinaten basierend auf der tatsächlichen Canvas-Größe
+    const scaleX = canvas.width / rect.width; // Verhältnis interne Breite zu sichtbarer Breite
+    const scaleY = canvas.height / rect.height; // Verhältnis interne Höhe zu sichtbarer Höhe
+    mouseX = (event.clientX - rect.left) * scaleX; // Angepasste X-Koordinate
+    mouseY = (event.clientY - rect.top) * scaleY; // Angepasste Y-Koordinate
+
+    // Berechne die absoluten Button-Koordinaten basierend auf der Canvas-Größe
+    const buttonX = buttontoPush.x * canvas.width;
+    const buttonY = buttontoPush.y * canvas.height;
+    const buttonWidth = buttontoPush.width * canvas.width;
+    const buttonHeight = buttontoPush.height * canvas.height;
+
     if (
-      mouseX >= buttontoPush.x &&
-      mouseX <= buttontoPush.x + buttontoPush.width &&
-      mouseY >= buttontoPush.y &&
-      mouseY <= buttontoPush.y + buttontoPush.height
+      mouseX >= buttonX &&
+      mouseX <= buttonX + buttonWidth &&
+      mouseY >= buttonY &&
+      mouseY <= buttonY + buttonHeight
     ) {
-      if (gameState == "Start") {
+      if (gameState === "Start") {
         startGame();
-      } else if (gameState == "Lose") {
+      } else if (gameState === "Lose") {
         world.resetGame();
-      } else if (gameState == "Win") {
+      } else if (gameState === "Win") {
         world.resetGame();
       }
     }

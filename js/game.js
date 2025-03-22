@@ -8,6 +8,7 @@ function init() {
   world = new World(canvas, keyboard);
   localStorage.setItem('isMuted', 'false');
   addButtonListener();
+  turnDeviceScreen = new TurnDeviceScreen();
   console.log("My Charachter is", world.character);
 }
 function setLocalSound() {

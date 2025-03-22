@@ -62,7 +62,7 @@ a {
 .panel-wrapper {
   display: flex;
   justify-content: space-between;
-  gap: 10px; /* Abstand zwischen den Buttons */
+  gap: 10px; 
 }
 
 button {
@@ -105,9 +105,9 @@ h3 {
 
 .instructions p {
   display: flex;
-  flex-direction: column; /* Icon und Text untereinander */
-  align-items: center; /* Zentriert Icon und Text horizontal */
-  gap: 5px; /* Kleiner Abstand zwischen Icon und Text */
+  flex-direction: column; 
+  align-items: center; 
+  gap: 5px; 
 }
 
 .key {
@@ -128,23 +128,23 @@ h3 {
   height: 70px;
 }
 .toggle-button {
-  background: none; /* Entfernt den Standard-Hintergrund */
-  border: none; /* Entfernt den Standard-Rahmen */
+  background: none; 
+  border: none; 
   cursor: pointer;
-  padding: 5px; /* Abstand um das Icon */
+  padding: 5px; 
 }
 
 .button-icon {
-  width: 50px; /* Größe des Icons anpassen */
+  width: 50px; 
   height: 50px;
-  transition: transform 0.3s ease; /* Sanfte Animation für Hover */
+  transition: transform 0.3s ease; 
 }
 
 .guide-button:hover .button-icon {
-  transform: scale(1.1); /* Vergrößert das Icon bei Hover */
+  transform: scale(1.1); 
   filter: brightness(
     0.8
-  ); /* Macht das Icon etwas dunkler, passend zum Spielstil */
+  ); 
 }
 
 .toggle-button {
@@ -173,8 +173,8 @@ h3 {
   flex: 1;
   display: flex;
   text-align: center;
-  flex-direction: column; /* Inhalt als Spalte anordnen */
-  justify-content: center; /* Vertikale Zentrierung */
+  flex-direction: column; 
+  justify-content: center; 
   align-items: center;
   margin-bottom: 100px;
 }
@@ -185,15 +185,19 @@ h3 {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.9); /* Dunkler Hintergrund */
+  background-color: rgba(0, 0, 0, 0.9); 
   color: white;
   display: flex;
   justify-content: center;
-  align-items: center;
-  z-index: 9999; /* Über allem anderen */
+  align-items: start;
+  z-index: 9999; 
   font-size: 24px;
   text-align: center;
+  p {
+    padding-top: 70px;
+  }
 }
+
 .impressum {
   h2 {
     font-size: 30px;
@@ -208,49 +212,103 @@ footer {
   text-align: center;
 }
 
-@media screen and (orientation: portrait) {
+/* @media screen and (orientation: portrait) {
   .turn-device-screen {
-    display: flex; /* Sichtbar machen */
+    display: flex; 
   }
+  .title,
   .main-content,
   footer {
-    display: none; /* Inhalt ausblenden, solange der Hinweis sichtbar ist */
+    display: none; 
   }
 }
 
-/* Blende den Hinweis im Querformat aus */
 @media (orientation: landscape) {
   .turn-device-screen {
-    display: none; /* Hinweis ausblenden */
-  }
-}
-
-@media(max-width: 900px){
-  h1 {
     display: none;
   }
 }
-@media (max-width: 720px) {
+
+@media (max-height: 720px) {
+  h1 {
+    display: none;
+  }
   canvas {
     width: 100%;
-    height: 330px !important;
+    height: 90vh !important;
   }
-  #canvas {
-    height: 330px !important;
-    width: 310px !important;
+  .main-content {
+    margin-bottom: 0;
   }
   .overlay {
     display: block !important;
+    width: 95%;
+    margin-top: -60px;
   }
   .canvas-class button {
     display: none;
   }
-}
-
-@media (max-height: 580px) {
-  canvas {
-    height: 100vh;
+  footer {
+    margin-top: -26px;
   }
 }
 
+@media (max-height: 480px) {
+  canvas {
+    height: 100vh;
+  }
+} */
+
+
+
+
+
+
+
+ @media screen and (orientation: portrait) {
+  .turn-device-screen {
+    display: flex; 
+  }
+  .title,
+  .main-content,
+  footer {
+    display: none; 
+  }
+}
+
+@media (orientation: landscape) {
+  .turn-device-screen {
+    display: none;
+  }
+}
+
+@media (orientation: landscape) and (max-width: 1524px) {
+  h1 {
+    display: none;
+  }
+  canvas {
+    /* width: 480px; */
+    height: 90vh !important;
+  }
+  .main-content {
+    margin-bottom: 0;
+  }
+  .overlay {
+    display: block !important;
+    width: 95%;
+    margin-top: -60px;
+  }
+  .canvas-class button {
+    display: none;
+  }
+  footer {
+    margin-top: -26px;
+  }
+}
+
+@media (max-height: 480px) {
+  canvas {
+    height: 100vh;
+  }
+} 
 
