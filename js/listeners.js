@@ -23,28 +23,13 @@ function addButtonListener() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const muteButton = document.getElementById("muteButton");
-  muteButton.addEventListener("click", () => {
-    world.toggleMute();
+  const muteButtons = document.querySelectorAll(".mute-button");
+  muteButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      world.toggleMute();
+    });
   });
-});
 
-// document.addEventListener('DOMContentLoaded', () => {
-//     const toggleButtons = document.querySelectorAll('.toggle-button');
-//     toggleButtons.forEach(button => {
-//       button.addEventListener('click', () => {
-//         if (button.textContent === 'Guide') {
-//           document.getElementById('').classList.toggle('d_none');
-//           document.getElementById('instruction-details').classList.toggle('d_none');
-//         } else if (button.textContent === 'Sound') {
-//           isMuted = !isMuted;
-//           console.log(isMuted ? "Sound is muted" : "Sound is unmuted");
-//         }
-//       });
-//     });
-//   });
-
-document.addEventListener("DOMContentLoaded", () => {
   const toggleButtons = document.querySelectorAll(".toggle-button");
   toggleButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -78,3 +63,4 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+

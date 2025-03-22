@@ -16,19 +16,18 @@ class World {
   winscreen = new WinScreen();
   reachEndBoss = false;
   endbossBar = new EndbossBar();
-  sounds = [];
   isMuted = false;
   isMusicPlaying = false;
   throwing_sound = new Audio("audio/throwing.mp3");
-  background_sound = new Audio("audio/throwing.mp3");
+  background_sound = new Audio("audio/background-sound.mp3");
   mouseX = 0;
   mouseY = 0;
   lastThrowTime = 0;
   throwDelay = 750;
   endbossStartX;
-  permanentBottle; // Neue feste Flasche bei x = 2000
+  permanentBottle;
   bottleTimer;
-  runInterval; // Speichert das run-Intervall
+  runInterval; 
   intervals = []
 
   constructor(canvas, keyboard) {
@@ -37,21 +36,10 @@ class World {
     this.keyboard = keyboard;
     this.character.world = this;
     this.background_sound.loop = true;
-    this.sounds = [this.throwing_sound, this.background_sound];
     this.level = null;
     this.trackMousePosition();
     this.draw();
   }
-
-  // run() {
-  //   setInterval(() => {
-  //     this.checkCollisions();
-  //     this.checkThrowObjects();
-  //     this.checkCharacterPosition();
-  //     this.checkEndbossDistance();
-  //     this.checkPermanentBottleCollision();
-  //   }, 100);
-  // }
 
   run() {
     this.runInterval = setInterval(() => {
@@ -61,14 +49,12 @@ class World {
         this.checkEndbossDistance();
         this.checkPermanentBottleCollision();
     }, 100);
-    this.intervals.push(this.runInterval); // Speichere das Intervall
+    this.intervals.push(this.runInterval); 
 }
 
 stopAllIntervals() {
-  // Stoppe alle gespeicherten Intervalle
   this.intervals.forEach(interval => clearInterval(interval));
   this.intervals = [];
-  // Stoppe Intervalle in Unterobjekten
   if (this.character && this.character.animateInterval) {
       clearInterval(this.character.animateInterval);
   }
@@ -86,11 +72,15 @@ stopAllIntervals() {
 
   setWorld() {
     firstLevel();
+    // setLocalSound();
     this.level = level1;
     this.endboss = this.level.enemies.find((enemy) => enemy instanceof Endboss);
     this.endbossStartX = this.endboss.x;
-    this.permanentBottle = new PermanentBottle(2000, 100);// Feste Flasche bei x = 2000
+    this.permanentBottle = new PermanentBottle(2000, 100);
     this.permanentBottle.y = 100;
+    const storedMute = localStorage.getItem('isMuted');
+    this.isMuted = storedMute === 'true' ? true : false;
+    this.toggleWorldSounds();
     this.Spawner();
     this.run();
   }
@@ -135,36 +125,27 @@ stopAllIntervals() {
       }
     }, 100);
   }
-
+  
   toggleMute() {
+    this.isMuted = !this.isMuted;
+    localStorage.setItem('isMuted', this.isMuted);
     this.level.enemies.forEach((enemy) => {
       if (enemy instanceof Endboss) {
         enemy.toggleMute();
       }
     });
     this.character.toggleMute();
-    this.isMuted = !this.isMuted;
-    this.sounds.forEach((sounds) => (sounds.muted = this.isMuted));
+    this.toggleWorldSounds();
+    console.log('toggleMute called, isMuted:', this.isMuted);
   }
 
-  checkCharacterPosition() {
-    if (this.character.x > 2000) {
-      this.reachEndBoss = true;
-    }
+
+  toggleWorldSounds() {
+    this.background_sound.muted = this.isMuted;
+    this.throwing_sound.muted = this.isMuted;
   }
+  
 
-  // checkThrowObejects() {
-  //   if (this.keyboard.D && this.character.availableBottles > 0) {
-  //       // this.character.throwBottle();
-  //       let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 100);
-  //       this.throwableObjects.push(bottle);
-  //       this.throwing_sound.play();
-
-  //       this.character.availableBottles--;
-  //       this.character.energyBottle = this.character.availableBottles * 20;
-  //       this.bottleBar.setBottlePercentage(this.character.energyBottle);
-  //   }
-  //  }
   checkThrowObjects() {
     if (this.keyboard.D && this.character.availableBottles > 0) {
       const currentTime = Date.now();
@@ -184,14 +165,11 @@ stopAllIntervals() {
     }
   }
 
-  // checkEndbossDistance() {
-  //   const endbossDistance = 500;
-  //   if (Math.abs(this.character.x - this.endboss.x) < endbossDistance) {
-  //     this.endboss.stateAlert = false;
-  //   } else {
-  //     this.endboss.stateAlert = true;
-  //   }
-  // }
+  checkCharacterPosition() {
+    if (this.character.x > 2000) {
+      this.reachEndBoss = true;
+    }
+  }
 
   checkEndbossDistance() {
     const endbossDistance = 500; 
@@ -210,15 +188,14 @@ stopAllIntervals() {
 
 checkPermanentBottleCollision() {
   if (this.character.isColliding(this.permanentBottle)) {
-      // Starte Timer, wenn noch nicht aktiv
       if (!this.bottleTimer) {
           this.bottleTimer = setInterval(() => {
-              this.character.addBottle(); // Flasche pro Sekunde hinzufügen
+              this.character.addBottle();
               this.bottleBar.setBottlePercentage(this.character.energyBottle);
-          }, 100); // 1000 ms = 1 Sekunde
+          }, 100);
       }
   } else {
-      // Stoppe Timer, wenn keine Kollision mehr
+
       if (this.bottleTimer) {
           clearInterval(this.bottleTimer);
           this.bottleTimer = null;
@@ -315,273 +292,126 @@ checkPermanentBottleCollision() {
     });
   }
 
-  // draw() {
-  //   this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-  //   this.canvas.style.cursor = "default";
-  //   if (gameState == "Start") {
-  //     this.addToMap(this.startscreen);
-  //     this.startscreen.drawButton(this.ctx, 270, 60, 180, 50, "Start Game");
-  //     buttontoPush = this.startscreen.startGameButton;
-
-  //     if (
-  //       this.startscreen.isMouseOverButton(
-  //         this.mouseX,
-  //         this.mouseY,
-  //         270,
-  //         60,
-  //         180,
-  //         50
-  //       )
-  //     ) {
-  //       this.canvas.style.cursor = "pointer";
-  //     }
-  //   }
-
-  //   if (gameState == "Lose") {
-  //     this.addToMap(this.losescreen);
-  //     this.losescreen.drawButton(this.ctx, 270, 60, 180, 50, "New Game");
-  //     buttontoPush = this.losescreen.startGameButton;
-
-  //     if (
-  //       this.losescreen.isMouseOverButton(
-  //         this.mouseX,
-  //         this.mouseY,
-  //         270,
-  //         60,
-  //         180,
-  //         50
-  //       )
-  //     ) {
-  //       this.canvas.style.cursor = "pointer";
-  //     }
-  //   }
-
-  //   if (gameState == "Win") {
-  //     this.addToMap(this.winscreen);
-  //     this.winscreen.drawButton(this.ctx, 270, 60, 180, 50, "New Game");
-  //     buttontoPush = this.winscreen.startGameButton;
-
-  //     if (
-  //       this.winscreen.isMouseOverButton(this.mouseX,this.mouseY,270,60,180,50)
-  //     ) {
-  //       this.canvas.style.cursor = "pointer";
-  //     }
-  //   }
-
-  //   if (gameState == "Game") {
-  //     this.canvas.style.cursor = "default";
-  //     this.ctx.translate(this.camera_x, 0);
-  //     this.addObjectToMap(this.level.backgroundObjects);
-
-  //     this.ctx.translate(-this.camera_x, 0);
-  //     this.addToMap(this.statusBar);
-  //     this.addToMap(this.coinBar);
-  //     this.addToMap(this.bottleBar);
-  //     if (this.reachEndBoss == true) {
-  //       this.addToMap(this.endbossBar);
-  //     }
-
-  //     this.ctx.translate(this.camera_x, 0);
-
-  //     this.addToMap(this.character);
-  //     this.addObjectToMap(this.level.coins);
-  //     this.addObjectToMap(this.level.bottles);
-  //     this.addToMap(this.permanentBottle);
-  //     this.permanentBottle.drawText(this.ctx);
-  //     this.addObjectToMap(this.level.clouds);
-  //     this.addObjectToMap(this.level.enemies);
-  //     this.addObjectToMap(this.throwableObjects);
-
-  //     this.ctx.translate(-this.camera_x, 0);
-  //   }
-
-  //   let self = this;
-  //   requestAnimationFrame(function () {
-  //     self.draw();
-  //   });
-  // }
-
-
-
-//   draw() {
-//     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-//     this.canvas.style.cursor = 'default';
-
-//     if (gameState == "Start") {
-//         this.addToMap(this.startscreen);
-//         const isHovered = this.startscreen.isMouseOverButton(this.mouseX, this.mouseY, 270, 45, 180, 50);
-//         this.startscreen.drawButton(this.ctx, 270, 45, 180, 50, "Start Game", {}, isHovered);
-//         buttontoPush = this.startscreen.startGameButton;
-//         if (isHovered) {
-//             this.canvas.style.cursor = 'pointer';
-//         }
-//     }
-
-//     if (gameState == "Lose") {
-//         this.addToMap(this.losescreen);
-//         const isHovered = this.losescreen.isMouseOverButton(this.mouseX, this.mouseY, 270, 45, 180, 50);
-//         this.losescreen.drawButton(this.ctx, 270, 45, 180, 50, "New Game", {}, isHovered);
-//         buttontoPush = this.losescreen.startGameButton;
-//         if (isHovered) {
-//             this.canvas.style.cursor = 'pointer'; 
-//         }
-//     }
-
-//     if (gameState == "Win") {
-//         this.addToMap(this.winscreen);
-//         const isHovered = this.winscreen.isMouseOverButton(this.mouseX, this.mouseY, 270, 45, 180, 50);
-//         this.winscreen.drawButton(this.ctx, 270, 45, 180, 50, "New Game", {}, isHovered);
-//         buttontoPush = this.winscreen.startGameButton;
-//         if (isHovered) {
-//             this.canvas.style.cursor = 'pointer'; 
-//         }
-//     }
-
-//     if (gameState == "Game") {
-//         this.canvas.style.cursor = 'default';
-//         this.ctx.translate(this.camera_x, 0);
-//         this.addObjectToMap(this.level.backgroundObjects);
-
-//         this.ctx.translate(-this.camera_x, 0);
-//         this.addToMap(this.statusBar);
-//         this.addToMap(this.coinBar);
-//         this.addToMap(this.bottleBar);
-//         if (this.reachEndBoss == true) {
-//             this.addToMap(this.endbossBar);
-//         }
-
-//         this.ctx.translate(this.camera_x, 0);
-
-//         this.addToMap(this.character);
-//         this.addObjectToMap(this.level.coins);
-//         this.addObjectToMap(this.level.bottles);
-//         this.addToMap(this.permanentBottle);
-//         this.permanentBottle.drawText(this.ctx);
-//         this.addObjectToMap(this.level.clouds);
-//         this.addObjectToMap(this.level.enemies);
-//         this.addObjectToMap(this.throwableObjects);
-
-//         this.ctx.translate(-this.camera_x, 0);
-//     }
-
-//     let self = this;
-//     requestAnimationFrame(function () {
-//         self.draw();
-//     });
-// }
-
-
 draw() {
   this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   this.canvas.style.cursor = 'default';
 
   if (gameState == "Start") {
-      this.addToMap(this.startscreen);
-      const isHovered = this.startscreen.isMouseOverButton(this.mouseX, this.mouseY, 270, 45, 180, 50);
-      this.startscreen.drawButton(this.ctx, 270, 45, 180, 50, "Start Game", {}, isHovered);
-      buttontoPush = this.startscreen.startGameButton;
-      if (isHovered) {
-          this.canvas.style.cursor = 'pointer';
-      }
-      // Musik stoppen, wenn im Start-Screen
-      if (this.isMusicPlaying) {
-          this.background_sound.pause();
-          this.isMusicPlaying = false;
-          console.log('Background music paused in Start screen');
-      }
+    this.addToMap(this.startscreen);
+    const isHovered = this.startscreen.isMouseOverButton(this.mouseX, this.mouseY, 270, 45, 180, 50);
+    this.startscreen.drawButton(this.ctx, 270, 45, 180, 50, "Start Game", {}, isHovered);
+    buttontoPush = this.startscreen.startGameButton;
+    if (isHovered) {
+      this.canvas.style.cursor = 'pointer';
+    }
+    // Musik stoppen, wenn im Start-Screen
+    if (this.isMusicPlaying) {
+      this.background_sound.pause();
+      this.isMusicPlaying = false;
+      console.log('Background music paused in Start screen');
+    }
+    // Mute-Buttons ausblenden
+    document.getElementById("muteButton").classList.add("d_none");
+    document.getElementById("muteButtonOverlay").classList.add("d_none");
   }
 
   if (gameState == "Lose") {
-      this.addToMap(this.losescreen);
-      const isHovered = this.losescreen.isMouseOverButton(this.mouseX, this.mouseY, 270, 45, 180, 50);
-      this.losescreen.drawButton(this.ctx, 270, 45, 180, 50, "New Game", {}, isHovered);
-      buttontoPush = this.losescreen.startGameButton;
-      if (isHovered) {
-          this.canvas.style.cursor = 'pointer'; 
-      }
-      // Musik stoppen, wenn im Lose-Screen
-      if (this.isMusicPlaying) {
-          this.background_sound.pause();
-          this.isMusicPlaying = false;
-          console.log('Background music paused in Lose screen');
-      }
+    this.addToMap(this.losescreen);
+    const isHovered = this.losescreen.isMouseOverButton(this.mouseX, this.mouseY, 270, 45, 180, 50);
+    this.losescreen.drawButton(this.ctx, 270, 45, 180, 50, "New Game", {}, isHovered);
+    buttontoPush = this.losescreen.startGameButton;
+    if (isHovered) {
+      this.canvas.style.cursor = 'pointer';
+    }
+    // Musik stoppen, wenn im Lose-Screen
+    if (this.isMusicPlaying) {
+      this.background_sound.pause();
+      this.isMusicPlaying = false;
+      console.log('Background music paused in Lose screen');
+    }
+    // Mute-Buttons ausblenden
+    document.getElementById("muteButton").classList.add("d_none");
+    document.getElementById("muteButtonOverlay").classList.add("d_none");
   }
 
   if (gameState == "Win") {
-      this.addToMap(this.winscreen);
-      const isHovered = this.winscreen.isMouseOverButton(this.mouseX, this.mouseY, 270, 45, 180, 50);
-      this.winscreen.drawButton(this.ctx, 270, 45, 180, 50, "New Game", {}, isHovered);
-      buttontoPush = this.winscreen.startGameButton;
-      if (isHovered) {
-          this.canvas.style.cursor = 'pointer'; 
-      }
-      // Musik stoppen, wenn im Win-Screen
-      if (this.isMusicPlaying) {
-          this.background_sound.pause();
-          this.isMusicPlaying = false;
-          console.log('Background music paused in Win screen');
-      }
+    this.addToMap(this.winscreen);
+    const isHovered = this.winscreen.isMouseOverButton(this.mouseX, this.mouseY, 270, 45, 180, 50);
+    this.winscreen.drawButton(this.ctx, 270, 45, 180, 50, "New Game", {}, isHovered);
+    buttontoPush = this.winscreen.startGameButton;
+    if (isHovered) {
+      this.canvas.style.cursor = 'pointer';
+    }
+    // Musik stoppen, wenn im Win-Screen
+    if (this.isMusicPlaying) {
+      this.background_sound.pause();
+      this.isMusicPlaying = false;
+      console.log('Background music paused in Win screen');
+    }
+    // Mute-Buttons ausblenden
+    document.getElementById("muteButton").classList.add("d_none");
+    document.getElementById("muteButtonOverlay").classList.add("d_none");
   }
 
   if (gameState == "Game") {
-      // Musik abspielen, wenn das Spiel startet
-      if (!this.isMusicPlaying) {
-          this.background_sound.play().catch(error => {
-              console.error('Error playing background music:', error);
-          });
-          this.isMusicPlaying = true;
-          console.log('Background music started');
-      }
+    // Musik abspielen, wenn das Spiel startet
+    if (!this.isMusicPlaying) {
+      this.background_sound.play().catch(error => {
+        console.error('Error playing background music:', error);
+      });
+      this.isMusicPlaying = true;
+      console.log('Background music started');
+    }
 
-      this.canvas.style.cursor = 'default';
-      this.ctx.translate(this.camera_x, 0);
-      this.addObjectToMap(this.level.backgroundObjects);
+    // Mute-Buttons einblenden
+    document.getElementById("muteButton").classList.remove("d_none");
+    document.getElementById("muteButtonOverlay").classList.remove("d_none");
 
-      this.ctx.translate(-this.camera_x, 0);
-      this.addToMap(this.statusBar);
-      this.addToMap(this.coinBar);
-      this.addToMap(this.bottleBar);
-      if (this.reachEndBoss == true) {
-          this.addToMap(this.endbossBar);
-      }
+    this.canvas.style.cursor = 'default';
+    this.ctx.translate(this.camera_x, 0);
+    this.addObjectToMap(this.level.backgroundObjects);
 
-      this.ctx.translate(this.camera_x, 0);
+    this.ctx.translate(-this.camera_x, 0);
+    this.addToMap(this.statusBar);
+    this.addToMap(this.coinBar);
+    this.addToMap(this.bottleBar);
+    if (this.reachEndBoss == true) {
+      this.addToMap(this.endbossBar);
+    }
 
-      this.addToMap(this.character);
-      this.addObjectToMap(this.level.coins);
-      this.addObjectToMap(this.level.bottles);
-      this.addToMap(this.permanentBottle);
-      this.permanentBottle.drawText(this.ctx);
-      this.addObjectToMap(this.level.clouds);
-      this.addObjectToMap(this.level.enemies);
-      this.addObjectToMap(this.throwableObjects);
+    this.ctx.translate(this.camera_x, 0);
 
-      this.ctx.translate(-this.camera_x, 0);
+    this.addToMap(this.character);
+    this.addObjectToMap(this.level.coins);
+    this.addObjectToMap(this.level.bottles);
+    this.addToMap(this.permanentBottle);
+    this.permanentBottle.drawText(this.ctx);
+    this.addObjectToMap(this.level.clouds);
+    this.addObjectToMap(this.level.enemies);
+    this.addObjectToMap(this.throwableObjects);
+
+    this.ctx.translate(-this.camera_x, 0);
   }
 
   let self = this;
   requestAnimationFrame(function () {
-      self.draw();
+    self.draw();
   });
 }
-  // resetGame() {
-  //   this.character.energy = 100;
-  //   this.level = level1;
-  //   this.character.x = 120;
-  //   this.character.lastHit = null; // Letzten Treffer zurücksetzen
-  //   // damiLevel();
-  //   startNewGame();
-  // }
+
   resetGame() {
-    this.stopAllIntervals(); // Stoppe alle Intervalle vor dem Zurücksetzen
+    this.background_sound.volume = 0;
+    this.throwing_sound.volume = 0;
+    this.stopAllIntervals(); 
     this.character.energy = 100;
-    this.character.lastHit = null; // Letzten Treffer zurücksetzen
-    this.character.collisionCooldown = false; // Kollisions-Cooldown zurücksetzen
+    this.character.lastHit = null; 
+    this.character.collisionCooldown = false; 
     this.character.x = 120;
     this.level = level1;
-    this.statusBar.setPercentage(100); // Lebensleiste explizit auf 100 setzen
-    this.reachEndBoss = false; // Endboss-Zustand zurücksetzen
-    startNewGame(); // Neues Spiel starten
+    this.statusBar.setPercentage(100); 
+    this.reachEndBoss = false; 
+    this.character.muteAllSounds();
+    startNewGame(); 
 }
 
   addToMap(mo) {

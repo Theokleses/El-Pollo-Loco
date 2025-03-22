@@ -4,27 +4,34 @@ let keyboard = new Keyboard();
 let gameState = "Start";
 
 function init() {
-    canvas = document.getElementById('canvas');
-    world = new World(canvas, keyboard);
-    addButtonListener();
-    console.log('My Charachter is', world.character);
+  canvas = document.getElementById("canvas");
+  world = new World(canvas, keyboard);
+  localStorage.setItem('isMuted', 'false');
+  addButtonListener();
+  console.log("My Charachter is", world.character);
+}
+function setLocalSound() {
+  localStorage.setItem("isMuted", false);
+}
+function startGame() {
+  gameState = "Game";
+  world.setWorld();
 }
 
-function startGame() {
-   gameState = "Game";
-   world.setWorld();
+function deleteWorld() {
+  world = null;
 }
-// function startNewGame() {
-//    // world = null;
-//    world = new World(canvas, keyboard);
-//    gameState = "Game";
-//    world.setWorld();
-// }
+
+function checkSoundMuted() {
+  return localStorage.getItem("isMuted") == "true" ? true : false;
+}
+
 function startNewGame() {
-   if (world) {
-       world.stopAllIntervals(); // Stoppe alle Intervalle im alten world
-   }
-   world = new World(canvas, keyboard); // Neues World-Objekt
-   gameState = "Game";
-   world.setWorld();
+  if (world) {
+    world.stopAllIntervals(); 
+  }
+  deleteWorld();
+  world = new World(canvas, keyboard); 
+  gameState = "Game";
+  world.setWorld();
 }

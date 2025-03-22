@@ -9,9 +9,14 @@ class MovableObject extends DrawableObject {
   lose_sound = new Audio("audio/lose.mp3");
   walking_sound = new Audio("audio/running.mp3");
   jumping_sound = new Audio("audio/jumping.mp3");
-  sounds = []; 
-  isMuted = false;
+  sounds = [this.win_sound, this.lose_sound, this.walking_sound, this.jumping_sound];
 
+  
+  constructor() {
+    super();
+    this.isMuted = localStorage.getItem('isMuted') === 'true'; 
+    this.sounds.forEach((sound) => (sound.muted = !this.isMuted));
+  }
 
   applyGravaty() {
     setInterval(() => {
@@ -70,10 +75,13 @@ class MovableObject extends DrawableObject {
     this.lastHit = new Date().getTime();
 }
 
+
 toggleMute() {
-  this.isMuted = !this.isMuted;
+  this.isMuted = checkSoundMuted();
   this.sounds.forEach(sounds => sounds.muted = this.isMuted);
-  console.log(this, this.isMuted, this.sounds);
+}
+muteAllSounds () {
+  this.sounds.forEach(sounds => sounds.volume = 0);
 }
 
   isHurt() {

@@ -33,10 +33,14 @@
     <script src="js/game.js" defer></script>
     <script src="js/listeners.js"></script>
   </head>
-
   <body onload="init()">
+    <div class="turn-device-screen d_none">
+      <p>Please turn your device to landscape mode.</p>
+    </div>
+    <div class="title">
+      <h1>El Pollo Loco</h1>
+    </div>
     <div class="main-content">
-      <h1><a>El Pollo Loco</a></h1>
       <div class="canvas-class">
         <canvas id="canvas" width="720" height="480"></canvas>
         <div class="canvas-button">
@@ -48,7 +52,7 @@
               class="button-icon"
             />
           </button>
-          <button id="muteButton" class="toggle-button mute-button">
+          <button id="muteButton" class="toggle-button mute-button ">
             <img
               id="mute-icon-main"
               src="img/icons/sound.png"
@@ -67,7 +71,10 @@
               <button id="btnRight">Right</button>
             </div>
             <div class="panel-wrapper-center">
-              <button class="muteButton toggle-button mute-button">
+              <button
+                id="muteButtonOverlay"
+                class="toggle-button mute-button d_none"
+              >
                 <img
                   id="mute-icon-overlay"
                   src="img/icons/sound.png"
