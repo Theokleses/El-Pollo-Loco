@@ -7,9 +7,5 @@ class WinScreen extends DrawableObject{
 
     constructor() {
         super().loadImage("img/9_intro_outro_screens/win/win_2.png"); 
-
-        
     }
-      
-
 }

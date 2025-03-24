@@ -59,7 +59,9 @@ class Endboss extends MovableObject {
     this.animate();
     this.sounds = [this.win_sound];
   }
-
+  /**
+   * Starts the animations of the boss based on its state.
+   */
   animate() {
     setInterval(() => {
       if (this.isDead()) {
@@ -80,6 +82,9 @@ class Endboss extends MovableObject {
     }, 200);
   }
 
+  /**
+   * Changes the movement speed of the boss.
+   */
   changeSpeed(speed) {
     this.speed = speed;
   }

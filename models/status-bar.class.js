@@ -18,26 +18,31 @@ class StatusBar extends DrawableObject {
     this.setPercentage(100);
   }
 
+  /**
+   * Sets the percentage and updates the displayed image.
+   */
   setPercentage(percentage) {
-    this.percentage = percentage; 
+    this.percentage = percentage;
     let path = this.IMAGES[this.resolveImageIndex()];
     this.img = this.imageCache[path];
-    console.log(`Character's current life: ${this.percentage}%`);
   }
 
+  /**
+   * Determines the image index based on the current percentage.
+   */
   resolveImageIndex() {
-      if (this.percentage == 100) {
+    if (this.percentage == 100) {
       return 5;
-      } else if (this.percentage >= 80) {
+    } else if (this.percentage >= 80) {
       return 4;
-      } else if (this.percentage >= 60) {
+    } else if (this.percentage >= 60) {
       return 3;
-      } else if (this.percentage >= 40) {
+    } else if (this.percentage >= 40) {
       return 2;
-      } else if (this.percentage >= 20) {
+    } else if (this.percentage >= 20) {
       return 1;
-      } else {
+    } else {
       return 0;
-      } 
     }
+  }
 }

@@ -30,7 +30,10 @@ class ThrowableObject extends MovableObject {
         this.hasHitGround = false; 
         this.animate();
     }
-
+    
+/**
+ * Throws the bottle with an initial upward speed and horizontal movement.
+ */
 throw() {
     this.speedY = 30;
     this.applyGravaty();
@@ -43,19 +46,22 @@ throw() {
     }, 25);
 }
 
+/**
+ * Starts the animation of the bottle based on its state.
+ */
+animate() {
+    setInterval(() => {
+        if (this.hasCollided) {
+            this.currentImageIndex = (this.currentImageIndex + 1) % this.BOTTLE_SPLASH.length;
+            this.loadImage(this.BOTTLE_SPLASH[this.currentImageIndex]);
+        } else if (!this.isAboveGround()) {
+            this.loadImage(this.BOTTLE_GROUND[0]);
+            this.hasHitGround = true;
+        } else {
+            this.currentImageIndex = (this.currentImageIndex + 1) % this.BOTTLE_ROTATE.length;
+            this.loadImage(this.BOTTLE_ROTATE[this.currentImageIndex]);
+        }
+    }, 100);
+}
 
-    animate() {
-        setInterval(() => {
-            if (this.hasCollided) {
-                this.currentImageIndex = (this.currentImageIndex + 1) % this.BOTTLE_SPLASH.length;
-                this.loadImage(this.BOTTLE_SPLASH[this.currentImageIndex]);
-            } else if (!this.isAboveGround()) {
-                this.loadImage(this.BOTTLE_GROUND[0]);
-                this.hasHitGround = true;
-            } else {
-                this.currentImageIndex = (this.currentImageIndex + 1) % this.BOTTLE_ROTATE.length;
-                this.loadImage(this.BOTTLE_ROTATE[this.currentImageIndex]);
-            }
-        }, 100);
-    }
 }

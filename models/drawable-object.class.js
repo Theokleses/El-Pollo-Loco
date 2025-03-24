@@ -1,175 +1,53 @@
-// class DrawableObject {
-//   img;
-//   imageCache = {};
-//   currentImage = 0;
-//   x = 120;
-//   y = 200;
-//   height = 150;
-//   width = 100;
-
-//   // loadImage('img/test.pgn');
-//   loadImage(path) {
-//     this.img = new Image(); // this.img = document.getElementById('image') <img id="image" src>
-//     this.img.src = path;
-//   }
-
-//   draw(ctx) {
-//     ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-//   }
-
-//   drawFrame(ctx) {
-//     //   if(this instanceof Character || this instanceof Chicken || this instanceof Coins || this instanceof Bottles) {
-//     //   ctx.beginPath();
-//     //   ctx.lineWidth = "1";
-//     //   ctx.strokeStyle = "blue";
-//     //   ctx.rect(this.x, this.y, this.width, this.height);
-//     //   ctx.stroke();
-//     // }
-//   }
-
-//   loadImages(arr) {
-//     arr.forEach((path) => {
-//       let img = new Image();
-//       img.src = path;
-//       this.imageCache[path] = img;
-//     });
-//   }
-
-//   // drawButton(ctx, x, y, width, height, text, style = {}) {
-//   //   ctx.fillStyle = style.backgroundColor || "rgba(0, 0, 0, 0.8)";
-//   //   ctx.fillRect(x, y, width, height);
-//   //   ctx.fillStyle = style.textColor || "white";
-//   //   ctx.font = style.font || "20px Arial";
-//   //   ctx.textAlign = "center";
-//   //   ctx.fillText(text, x + width / 2, y + height / 2 + 7);
-//   // }
-//   //   drawButton(ctx, x, y, width, height, text, style = {}) {
-//   //     ctx.fillStyle = style.backgroundColor || "#FFCC00"; // Gelb des "O"
-//   //     ctx.beginPath();
-//   //     ctx.roundRect(x, y, width, height, 10); // 10 ist der Border-Radius
-//   //     ctx.fill();
-//   //     ctx.fillStyle = style.textColor || "white";
-//   //     ctx.font = style.font || "20px Arial";
-//   //     ctx.textAlign = "center";
-//   //     ctx.fillText(text, x + width / 2, y + height / 2 + 7);
-//   // }
-
-//   drawButton(ctx, x, y, width, height, text, style = {}, isHovered = false) {
-//     ctx.fillStyle = isHovered
-//       ? style.hoverBackgroundColor || "#CC7A00"
-//       : style.backgroundColor || "#FFCC00";
-//     if (isHovered) {this.applyHoverEffect(ctx, x, y, width, height);}
-//     ctx.beginPath();
-//     ctx.roundRect(x, y, width, height, 10);
-//     ctx.fill();
-//     ctx.strokeStyle = "#CC7A00"; 
-//     ctx.lineWidth = 5;
-//     ctx.stroke();
-
-//     ctx.fillStyle = style.textColor || "white";
-//     ctx.font = style.font || "30px Bangers";
-//     ctx.textAlign = "center";
-//     const textOffset = isHovered ? 11.3 : 10;
-//     ctx.fillText(text, x + width / 2, y + height / 2 + textOffset);
-//     if (isHovered) {ctx.restore();}
-//   }
-
-//   applyHoverEffect(ctx, x, y, width, height) {
-//     ctx.save();
-//     ctx.translate(x + width / 2, y + height / 2); 
-//     ctx.scale(1.1, 1.1); 
-//     ctx.translate(-(x + width / 2), -(y + height / 2)); 
-//     ctx.shadowColor = "rgba(0, 0, 0, 0.5)"; 
-//     ctx.shadowBlur = 10; 
-//     ctx.shadowOffsetX = 5; 
-//     ctx.shadowOffsetY = 5; 
-//   }
-
-//   isMouseOverButton(
-//     mouseX,
-//     mouseY,
-//     buttonX,
-//     buttonY,
-//     buttonWidth,
-//     buttonHeight
-//   ) {
-//     return (
-//       mouseX >= buttonX &&
-//       mouseX <= buttonX + buttonWidth &&
-//       mouseY >= buttonY &&
-//       mouseY <= buttonY + buttonHeight
-//     );
-//   }
-// }
-
-
 class DrawableObject {
   img;
   imageCache = {};
   currentImage = 0;
-  // Entferne feste Werte für x, y, width, height - diese setzen wir jetzt dynamisch
-  x; // Wird später gesetzt
+  x; 
   y;
   height;
   width;
 
+/**
+ * Loads an image from the specified path.
+ */
   loadImage(path) {
     this.img = new Image();
     this.img.src = path;
   }
 
+/**
+ * Draws the object's image on the canvas.
+ */
   draw(ctx) {
     ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
   }
 
-  // drawFrame(ctx) {
-  //   // Dein bestehender Code bleibt unverändert
-  // }
-
-  //   drawFrame(ctx) {
-  //     if(this instanceof Character || this instanceof Chicken || this instanceof Coins || this instanceof Bottles) {
-  //     ctx.beginPath();
-  //     ctx.lineWidth = "1";
-  //     ctx.strokeStyle = "blue";
-  //     ctx.rect(this.x, this.y, this.width, this.height);
-  //     ctx.stroke();
-  //   }
-  // }
-  // drawFrame(ctx) {
-  //   if (this instanceof Character || this instanceof Chicken || this instanceof Coins || this instanceof Bottles) {
-  //     ctx.beginPath();
-  //     ctx.lineWidth = "1";
-  //     ctx.strokeStyle = "blue";
-      
-  //     // Für Character: collisionHeight und collisionY verwenden, falls definiert
-  //     if (this instanceof Character) {
-  //       ctx.rect(this.x, this.collisionY || this.y, this.width, this.collisionHeight || this.height);
-  //     } else {
-  //       // Für andere Klassen: Standard height und y
-  //       ctx.rect(this.x, this.y, this.width, this.height);
-  //     }
-  //     ctx.stroke();
-  //   }
-  // }
+/**
+ * Draws a frame around the object for debugging (currently commented out).
+ */
   drawFrame(ctx) {
-    if (this instanceof Character || this instanceof Chicken || this instanceof Coins || this instanceof Bottles || this instanceof Endboss) {
-      ctx.beginPath();
-      ctx.lineWidth = "1";
-      ctx.strokeStyle = "blue";
-      ctx.rect(this.x, this.collisionY || this.y, this.width, this.collisionHeight || this.height);
-      ctx.stroke();
+    // if (this instanceof Character || this instanceof Chicken || this instanceof Coins || this instanceof Bottles || this instanceof Endboss) {
+    //   ctx.beginPath();
+    //   ctx.lineWidth = "1";
+    //   ctx.strokeStyle = "blue";
+    //   ctx.rect(this.x, this.collisionY || this.y, this.width, this.collisionHeight || this.height);
+    //   ctx.stroke();
   
-      // Bein-Zone visualisieren
-      if (this instanceof Character) {
-        const legsY = (this.collisionY || this.y) + (this.collisionHeight || this.height) * 0.8;
-        const legsHeight = (this.collisionHeight || this.height) * 0.2;
-        ctx.beginPath();
-        ctx.strokeStyle = "green"; // Grün für Beine
-        ctx.rect(this.x, legsY, this.width, legsHeight);
-        ctx.stroke();
-      }
-    }
+    //   // Bein-Zone visualisieren
+    //   if (this instanceof Character) {
+    //     const legsY = (this.collisionY || this.y) + (this.collisionHeight || this.height) * 0.8;
+    //     const legsHeight = (this.collisionHeight || this.height) * 0.2;
+    //     ctx.beginPath();
+    //     ctx.strokeStyle = "green"; 
+    //     ctx.rect(this.x, legsY, this.width, legsHeight);
+    //     ctx.stroke();
+    //   }
+    // }
   }
+
+ /**
+ * Loads multiple images into the image cache.
+ */ 
   loadImages(arr) {
     arr.forEach((path) => {
       let img = new Image();
@@ -177,39 +55,45 @@ class DrawableObject {
       this.imageCache[path] = img;
     });
   }
+  
+/**
+ * Draws a button on the canvas with hover effects.
+ */
+drawButton(ctx, x, y, width, height, text, style = {}, isHovered = false) {
+  const canvasWidth = ctx.canvas.width, canvasHeight = ctx.canvas.height;
+  this.x = x * canvasWidth; this.y = y * canvasHeight;
+  this.width = width * canvasWidth; this.height = height * canvasHeight;
+  ctx.fillStyle = isHovered ? style.hoverBackgroundColor || "#CC7A00" : style.backgroundColor || "#FFCC00";
+  if (isHovered) this.applyHoverEffect(ctx, this.x, this.y, this.width, this.height);
+  this.drawButtonShape(ctx);
+  this.drawButtonText(ctx, text, style, isHovered);
+  if (isHovered) ctx.restore();
+}
 
-  drawButton(ctx, x, y, width, height, text, style = {}, isHovered = false) {
-    // Dynamische Position und Größe relativ zur Canvas-Größe
-    const canvasWidth = ctx.canvas.width;
-    const canvasHeight = ctx.canvas.height;
-    this.x = x * canvasWidth; // z. B. x = 0.4 bedeutet 40% der Breite
-    this.y = y * canvasHeight; // z. B. y = 0.5 bedeutet 50% der Höhe
-    this.width = width * canvasWidth; // z. B. width = 0.2 bedeutet 20% der Breite
-    this.height = height * canvasHeight; // z. B. height = 0.1 bedeutet 10% der Höhe
+/**
+ * Draws the button shape with border.
+ */
+drawButtonShape(ctx) {
+  ctx.beginPath();
+  ctx.roundRect(this.x, this.y, this.width, this.height, 10);
+  ctx.fill();
+  ctx.strokeStyle = "#CC7A00";
+  ctx.lineWidth = 5;
+  ctx.stroke();
+}
 
-    ctx.fillStyle = isHovered
-      ? style.hoverBackgroundColor || "#CC7A00"
-      : style.backgroundColor || "#FFCC00";
-    if (isHovered) {
-      this.applyHoverEffect(ctx, this.x, this.y, this.width, this.height);
-    }
-    ctx.beginPath();
-    ctx.roundRect(this.x, this.y, this.width, this.height, 10);
-    ctx.fill();
-    ctx.strokeStyle = "#CC7A00";
-    ctx.lineWidth = 5;
-    ctx.stroke();
-
-    ctx.fillStyle = style.textColor || "white";
-    ctx.font = style.font || "30px Bangers";
-    ctx.textAlign = "center";
-    const textOffset = isHovered ? 11.3 : 10;
-    ctx.fillText(text, this.x + this.width / 2, this.y + this.height / 2 + textOffset);
-    if (isHovered) {
-      ctx.restore();
-    }
-  }
-
+/**
+ * Draws the button text with styling.
+ */
+drawButtonText(ctx, text, style, isHovered) {
+  ctx.fillStyle = style.textColor || "white";
+  ctx.font = style.font || "30px Bangers";
+  ctx.textAlign = "center";
+  ctx.fillText(text, this.x + this.width / 2, this.y + this.height / 2 + (isHovered ? 11.3 : 10));
+}
+/**
+ * Applies a hover effect to the canvas context.
+ */
   applyHoverEffect(ctx, x, y, width, height) {
     ctx.save();
     ctx.translate(x + width / 2, y + height / 2);
@@ -220,7 +104,9 @@ class DrawableObject {
     ctx.shadowOffsetX = 5;
     ctx.shadowOffsetY = 5;
   }
-
+/**
+ * Checks if the mouse is over the button area.
+ */
   isMouseOverButton(mouseX, mouseY, buttonX, buttonY, buttonWidth, buttonHeight) {
     return (
       mouseX >= buttonX &&

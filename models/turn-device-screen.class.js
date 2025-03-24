@@ -19,7 +19,9 @@ class TurnDeviceScreen extends DrawableObject {
       this.element = document.querySelector(".turn-device-screen"); 
       this.animate(); 
     }
-  
+    /**
+     * Starts the idle animation by cycling through background images.
+     */
     animate() {
       setInterval(() => {
         this.element.style.backgroundImage = `url(${this.IMAGES_IDLE_LONG[this.currentImageIndex]})`;

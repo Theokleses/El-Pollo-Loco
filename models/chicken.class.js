@@ -18,10 +18,12 @@ class Chicken extends MovableObject {
     this.loadImages(this.IMAGES_WALKING);
     this.loadImages(this.IMAGE_DEAD);
     this.speed = 0.15 + Math.random() * 0.7;
-
     this.animate();
   }
-
+  
+/**
+ * Starts the animations of the chicken.
+ */
   animate() {
     setInterval(() => {
       if (!this.isDead()) {
