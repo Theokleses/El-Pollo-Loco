@@ -122,10 +122,54 @@ class DrawableObject {
     ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
   }
 
-  drawFrame(ctx) {
-    // Dein bestehender Code bleibt unverändert
-  }
+  // drawFrame(ctx) {
+  //   // Dein bestehender Code bleibt unverändert
+  // }
 
+  //   drawFrame(ctx) {
+  //     if(this instanceof Character || this instanceof Chicken || this instanceof Coins || this instanceof Bottles) {
+  //     ctx.beginPath();
+  //     ctx.lineWidth = "1";
+  //     ctx.strokeStyle = "blue";
+  //     ctx.rect(this.x, this.y, this.width, this.height);
+  //     ctx.stroke();
+  //   }
+  // }
+  // drawFrame(ctx) {
+  //   if (this instanceof Character || this instanceof Chicken || this instanceof Coins || this instanceof Bottles) {
+  //     ctx.beginPath();
+  //     ctx.lineWidth = "1";
+  //     ctx.strokeStyle = "blue";
+      
+  //     // Für Character: collisionHeight und collisionY verwenden, falls definiert
+  //     if (this instanceof Character) {
+  //       ctx.rect(this.x, this.collisionY || this.y, this.width, this.collisionHeight || this.height);
+  //     } else {
+  //       // Für andere Klassen: Standard height und y
+  //       ctx.rect(this.x, this.y, this.width, this.height);
+  //     }
+  //     ctx.stroke();
+  //   }
+  // }
+  drawFrame(ctx) {
+    if (this instanceof Character || this instanceof Chicken || this instanceof Coins || this instanceof Bottles || this instanceof Endboss) {
+      ctx.beginPath();
+      ctx.lineWidth = "1";
+      ctx.strokeStyle = "blue";
+      ctx.rect(this.x, this.collisionY || this.y, this.width, this.collisionHeight || this.height);
+      ctx.stroke();
+  
+      // Bein-Zone visualisieren
+      if (this instanceof Character) {
+        const legsY = (this.collisionY || this.y) + (this.collisionHeight || this.height) * 0.8;
+        const legsHeight = (this.collisionHeight || this.height) * 0.2;
+        ctx.beginPath();
+        ctx.strokeStyle = "green"; // Grün für Beine
+        ctx.rect(this.x, legsY, this.width, legsHeight);
+        ctx.stroke();
+      }
+    }
+  }
   loadImages(arr) {
     arr.forEach((path) => {
       let img = new Image();

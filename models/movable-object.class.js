@@ -9,7 +9,8 @@ class MovableObject extends DrawableObject {
   lose_sound = new Audio("audio/lose.mp3");
   walking_sound = new Audio("audio/running.mp3");
   jumping_sound = new Audio("audio/jumping.mp3");
-  sounds = [this.win_sound, this.lose_sound, this.walking_sound, this.jumping_sound];
+  hurt_sound = new Audio("audio/hurt.mp3");
+  sounds = [this.win_sound, this.lose_sound, this.walking_sound, this.jumping_sound,this.hurt_sound];
 
   
   constructor() {
@@ -50,57 +51,120 @@ class MovableObject extends DrawableObject {
     this.x -= this.speed;
   }
 
-  hit() {
-    console.log("Schaden wird zugefügt:", this.constructor.name, "Energie:", this.energy);
-    let damage = this instanceof Endboss ? 20 : 5; 
-    this.energy -= damage;
+//   hit() {
+//     console.log("Schaden wird zugefügt:", this.constructor.name, "Energie:", this.energy);
+//     let damage = this instanceof Endboss ? 20 : 5; 
+//     this.energy -= damage;
   
-    if (this.energy <= 0) {
-        this.energy = 0;
+//     if (this.energy <= 0) {
+//         this.energy = 0;
   
-        if (this instanceof Character) {
-            setTimeout(() => {
-                this.lose_sound.play();
-                gameState = "Lose"; 
-            }, 1000); 
-        }
+//         if (this instanceof Character) {
+//             setTimeout(() => {
+//                 this.lose_sound.play();
+//                 gameState = "Lose"; 
+//             }, 1000); 
+//         }
   
-        if (this instanceof Endboss) {
-            setTimeout(() => {
-                this.win_sound.play();
-                gameState = "Win";     
-            }, 1000); 
-        }
-    }
-    this.lastHit = new Date().getTime();
-}
+//         if (this instanceof Endboss) {
+//             setTimeout(() => {
+//                 this.win_sound.play();
+//                 gameState = "Win";     
+//             }, 1000); 
+//         }
+//     }
+//     this.lastHit = new Date().getTime();
+// }
+hit() {
+  console.log("Schaden wird zugefügt:", this.constructor.name, "Energie vor Schaden:", this.energy);
+  let damage = this instanceof Endboss ? 20 : 5;
+  this.energy -= damage;
 
+  if (this.energy <= 0) {
+    this.energy = 0;
+
+    if (this instanceof Character) {
+      setTimeout(() => {
+        if (!this.isMuted) {
+          this.lose_sound.currentTime = 0;
+          this.lose_sound.play();
+        }
+        gameState = "Lose";
+      }, 1000);
+    }
+
+    if (this instanceof Endboss) {
+      setTimeout(() => {
+        this.win_sound.muted = false;
+        this.win_sound.currentTime = 0;
+        this.win_sound.play();
+        gameState = "Win";
+      }, 1000);
+    }
+  }
+  this.lastHit = new Date().getTime();
+}
 
 toggleMute() {
   this.isMuted = checkSoundMuted();
   this.sounds.forEach(sounds => sounds.muted = this.isMuted);
+  console.log("toggleMute aufgerufen, isMuted:", this.isMuted);
 }
 muteAllSounds () {
   this.sounds.forEach(sounds => sounds.volume = 0);
+  console.log("muteAllSounds aufgerufen");
 }
 
+  // isHurt() {
+  //   let timePassed = new Date().getTime() - this.lastHit;
+  //   return timePassed < 250; 
+  // }
   isHurt() {
     let timePassed = new Date().getTime() - this.lastHit;
-    return timePassed < 250; 
+    let isCurrentlyHurt = timePassed < 250;
+
+    if (this instanceof Character) { // Nur für Character-Instanzen
+      if (this.isDead()) { // Wenn tot, Sound stoppen
+        if (this.isPlayingHurtSound) {
+          this.hurt_sound.pause();
+          this.isPlayingHurtSound = false;
+        }
+      } else if (isCurrentlyHurt && !this.isPlayingHurtSound) {
+        this.hurt_sound.currentTime = 0;
+        this.hurt_sound.play();
+        this.isPlayingHurtSound = true;
+      } else if (!isCurrentlyHurt && this.isPlayingHurtSound) {
+        // this.hurt_sound.pause();
+        this.isPlayingHurtSound = false;
+      }
+    }
+
+    return isCurrentlyHurt;
   }
   isDead() {
     return this.energy === 0;
   }
 
-   isColliding(mo) {
+  //  isColliding(mo) {
+  //   return this.x + this.width > mo.x &&
+  //     this.y + this.height > mo.y &&
+  //     this.x < mo.x &&
+  //     this.y < mo.y + mo.height;
+  // }
+  isColliding(mo) {
+    const thisCollisionHeight = this.collisionHeight || this.height; // Fallback auf height, falls collisionHeight nicht definiert
+    const thisCollisionY = this.collisionY || this.y; // Fallback auf y
+    const moCollisionHeight = mo.collisionHeight || mo.height;
+    const moCollisionY = mo.collisionY || mo.y;
+
     return this.x + this.width > mo.x &&
-      this.y + this.height > mo.y &&
-      this.x < mo.x &&
-      this.y < mo.y + mo.height;
+      thisCollisionY + thisCollisionHeight > moCollisionY &&
+      this.x < mo.x + mo.width &&
+      thisCollisionY < moCollisionY + moCollisionHeight;
   }
 
    isLegsColliding(mo) {
-    const offset = 10; 
+    const offset = 1; 
     const legsY = this.y + this.height * 0.7;
     const legsHeight = this.height * 0.3;
 

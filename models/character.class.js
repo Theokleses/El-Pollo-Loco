@@ -2,6 +2,7 @@ class Character extends MovableObject {
   y = 85;
   height = 235;
   width = 120;
+  collisionHeight = 150;
   speed = 10;
   availableBottles = 0;
   energyBottle = 0;
@@ -10,6 +11,7 @@ class Character extends MovableObject {
   idleCounter = 0;
   idleSleepTimer = 450;
   isStanding = false;
+  jumpDamageCooldown = false; 
 
   IMAGES_WALKING = [
     "img/2_character_pepe/2_walk/W-21.png",
@@ -84,6 +86,11 @@ class Character extends MovableObject {
     this.isMuted = localStorage.getItem("isMuted") === "true";
     this.sounds.forEach((sound) => (sound.muted = this.isMuted));
     this.applyGravaty();
+    this.updateCollisionBox();
+  }
+
+  updateCollisionBox() {
+    this.collisionY = this.y + 85;
   }
 
   startAnimation() {
@@ -122,8 +129,9 @@ class Character extends MovableObject {
         this.idleState();
         this.idleCounter++;
       }
-
       this.world.camera_x = -this.x + 50;
+      this.updateCollisionBox();
+      this.checkDamageOnJump();
     }, 1000 / 60);
 
     setInterval(() => {
@@ -141,6 +149,60 @@ class Character extends MovableObject {
     }, 50);
   }
 
+
+  // animate() {
+  //   setInterval(() => {
+  //     this.walking_sound.pause();
+  //     if (this.world && this.world.keyboard) {
+  //       if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
+  //         this.moveRight();
+  //         this.idleCounter = 0;
+  //         this.walking_sound.play();
+  //         this.otherDirection = false;
+  //       }
+  //       if (this.world.keyboard.LEFT && this.x > 0) {
+  //         this.moveLeft();
+  //         this.idleCounter = 0;
+  //         this.walking_sound.play();
+  //         this.otherDirection = true;
+  //       } else if (this.world.keyboard.UP && !this.isAboveGround()) {
+  //         this.jump();
+  //         this.idleCounter = 0;
+  //         this.jumping_sound.play();
+  //       } else {
+  //         this.idleCounter++;
+  //         this.idleState();
+  //       }
+  //       this.world.camera_x = -this.x + 50;
+  //       this.updateCollisionBox();
+  //       this.checkDamageOnJump();
+  //     }
+  //   }, 1000 / 60);
+
+  //   setInterval(() => {
+  //     if (this.isDead()) {
+  //       this.playAnimation(this.IMAGES_DEAD);
+  //       this.hurt_sound.pause(); // Hurt-Sound stoppen, wenn tot
+  //     } else if (this.isHurt()) {
+  //       this.playAnimation(this.IMAGES_HURT);
+  //       if (!this.hasPlayedHurtSound) {
+  //         this.hurt_sound.play(); // Sound starten
+  //         this.hurt_sound.currentTime = 0; // Sound zurücksetzen
+  //         this.hasPlayedHurtSound = true;
+  //       }
+  //     } else {
+  //       this.hurt_sound.pause(); // Hurt-Sound stoppen, wenn Hurt-Animation vorbei
+  //       this.hasPlayedHurtSound = false; // Flag zurücksetzen
+  //       if (this.isAboveGround()) {
+  //         this.playAnimation(this.IMAGES_JUMPING);
+  //       } else if (this.world && this.world.keyboard) {
+  //         if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+  //           this.playAnimation(this.IMAGES_WALKING);
+  //         }
+  //       }
+  //     }
+  //   }, 50);
+  // }
   idleState() {
     if (!this.isStanding) {
       this.isStanding = true;
@@ -159,17 +221,24 @@ class Character extends MovableObject {
   jump() {
     this.speedY = 30;
     this.checkDamageOnJump();
+    this.jumpDamageCooldown = false;
   }
 
   checkDamageOnJump() {
-    this.world.level.enemies.forEach((enemy) => {
-      if (this.isColliding(enemy) && this.isAboveGround()) {
-        enemy.energy = 0;
-        this.world.level.enemies = this.world.level.enemies.filter(
-          (e) => e.energy > 0
-        );
-      }
+    if (!this.isAboveGround() || this.speedY >= 0 || this.jumpDamageCooldown) return; 
+    let hitEnemies = [];
+    this.world.level.enemies.forEach((enemy, index) => {
+      if (this.isLegsColliding(enemy) && enemy.energy > 0) {
+        enemy.energy--; 
+        if (enemy.energy <= 0) {hitEnemies.push(index);}}
     });
+    if (hitEnemies.length > 0 || this.world.level.enemies.some(enemy => this.isLegsColliding(enemy))) {this.jumpDamageCooldown = true; 
+    }
+    for (let i = hitEnemies.length - 1; i >= 0; i--) {
+      setTimeout(() => {
+        if (this.world.level.enemies[hitEnemies[i]]) {this.world.level.enemies.splice(hitEnemies[i], 1);}
+      }, 250);
+    }
   }
 
   resetCollisionCooldown() {

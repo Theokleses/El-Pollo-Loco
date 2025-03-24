@@ -24,6 +24,8 @@ class World {
   isMusicPlaying = false;
   throwing_sound = new Audio("audio/throwing.mp3");
   background_sound = new Audio("audio/background-sound.mp3");
+  coin_sound = new Audio("audio/coin.mp3");
+  bottle_sound = new Audio("audio/bottle.mp3");
   mouseX = 0;
   mouseY = 0;
   lastThrowTime = 0;
@@ -145,13 +147,13 @@ stopAllIntervals() {
     console.log('toggleMute called, isMuted:', this.isMuted);
   }
 
-
   toggleWorldSounds() {
     this.background_sound.muted = this.isMuted;
     this.throwing_sound.muted = this.isMuted;
+    this.coin_sound.muted = this.isMuted;
+    this.bottle_sound.muted = this.isMuted;
   }
   
-
   checkThrowObjects() {
     if (this.keyboard.D && this.character.availableBottles > 0) {
       const currentTime = Date.now();
@@ -195,6 +197,7 @@ checkPermanentBottleCollision() {
           this.bottleTimer = setInterval(() => {
               this.character.addBottle();
               this.bottleBar.setBottlePercentage(this.character.energyBottle);
+              this.bottle_sound.play();
           }, 100);
       }
   } else {
@@ -219,17 +222,11 @@ checkPermanentBottleCollision() {
     for (let i = this.level.enemies.length - 1; i >= 0; i--) {
       const enemy = this.level.enemies[i];
       if (this.character.isColliding(enemy) && enemy.energy > 0) {
-        if (enemy instanceof Endboss) enemy.changeSpeed(0);
+        if (enemy instanceof Endboss) enemy.changeSpeed(5);
         if (!this.character.collisionCooldown) {
           this.character.collisionCooldown = true;
-          if (this.character.speedY < 0 && this.character.isAboveGround() && this.character.isLegsColliding(enemy)
-          ) {
-            enemy.energy--;
-            if (enemy.energy <= 0) setTimeout(() => this.level.enemies.splice(i, 1), 250);
-          } else {
-            this.character.hit();
-            this.statusBar.setPercentage(this.character.energy);
-          }
+          this.character.hit(); // Nur Schaden vom Gegner
+          this.statusBar.setPercentage(this.character.energy);
           this.character.resetCollisionCooldown();
         }
       } else if (enemy instanceof Endboss) enemy.changeSpeed(60);
@@ -242,6 +239,7 @@ checkPermanentBottleCollision() {
         this.character.addCoin();
         this.coinBar.setCoinPercentage(this.character.energyCoin);
         this.level.coins.splice(index, 1);
+        this.coin_sound.play();
       }
     });
   }
@@ -252,6 +250,7 @@ checkPermanentBottleCollision() {
         this.character.addBottle();
         this.bottleBar.setBottlePercentage(this.character.energyBottle);
         this.level.bottles.splice(index, 1);
+        this.bottle_sound.play();
       }
     });
   }
@@ -360,7 +359,7 @@ drawBackgroundAndBars() {
 drawInteractiveObjects() {
   this.ctx.translate(this.camera_x, 0);
   if (this.character) {
-    Object.assign(this.character, { x: this.character.x || 120, y: this.character.y || 85, width: this.character.width || 120, height: this.character.height || 235, world: this });
+    Object.assign(this.character, { x: this.character.x || 1, y: this.character.y || 85, width: this.character.width || 120, height: this.character.height || 235, world: this });
     if (!this.character.animationStarted) {
       this.character.startAnimation();
       this.character.animationStarted = true;
