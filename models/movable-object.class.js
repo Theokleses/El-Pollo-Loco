@@ -21,7 +21,7 @@ class MovableObject extends DrawableObject {
   constructor() {
     super();
     this.isMuted = localStorage.getItem("isMuted") === "true";
-    this.sounds.forEach((sound) => (sound.muted = !this.isMuted));
+    this.sounds.forEach((sound) => (sound.muted = this.isMuted));
   }
 
   /**
@@ -86,7 +86,7 @@ class MovableObject extends DrawableObject {
         }, 1000);
       }
       if (this instanceof Endboss) {
-        setTimeout(() => {this.win_sound.muted = false; this.win_sound.currentTime = 0; this.win_sound.play();
+        setTimeout(() => {this.win_sound.currentTime = 0; this.win_sound.play();
           gameState = "Win";
         }, 1000);
       }
@@ -152,13 +152,15 @@ class MovableObject extends DrawableObject {
   isLegsColliding(mo) {
     const offset = 1;
     const legsY = this.y + this.height * 0.7;
-    const legsHeight = this.height * 0.3;
+    const legsHeight = this.height * 0.3;     
+    const feetWidth = this.width * 0.2;      
+    const feetX = this.x + (this.width - feetWidth) / 2; 
 
     return (
-      this.x + this.width > mo.x - offset &&
-      legsY + legsHeight > mo.y - offset &&
-      this.x < mo.x + mo.width + offset &&
-      legsY < mo.y + mo.height + offset
+        feetX + feetWidth > mo.x - offset &&      
+        legsY + legsHeight > mo.y - offset &&     
+        feetX < mo.x + mo.width + offset &&       
+        legsY < mo.y + mo.height + offset   
     );
-  }
+}
 }

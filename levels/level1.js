@@ -7,6 +7,8 @@ function firstLevel() {
         new Chicken(),
         new Chicken(),
         new Chicken(),
+        new Chicken(),
+        new BigChicken(),
         new BigChicken(),
         new BigChicken(),
         new Endboss()

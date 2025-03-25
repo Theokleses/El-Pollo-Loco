@@ -35,8 +35,10 @@ class DrawableObject {
   
     //   // Bein-Zone visualisieren
     //   if (this instanceof Character) {
-    //     const legsY = (this.collisionY || this.y) + (this.collisionHeight || this.height) * 0.8;
-    //     const legsHeight = (this.collisionHeight || this.height) * 0.2;
+    //     const legsY = (this.collisionY || this.y) + (this.collisionHeight || this.height) * 0.7;
+    //     const legsHeight = (this.collisionHeight || this.height) * 0.3;
+    //     const feetWidth = this.width * 0.2; // Schmalerer Bereich für die Füße
+    //     const feetX = this.x + (this.width - feetWidth) / 2; // Zentriert
     //     ctx.beginPath();
     //     ctx.strokeStyle = "green"; 
     //     ctx.rect(this.x, legsY, this.width, legsHeight);

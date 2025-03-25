@@ -1,6 +1,7 @@
-let buttontoPush = {x: 0.4, y: 0.5, width: 0.2, height: 0.1, };
+let buttontoPush = { x: 0.4, y: 0.5, width: 0.2, height: 0.1 };
 let isMuted = false;
 let mouseX, mouseY;
+
 /**
  * Adds an event listener to the canvas to handle mouse clicks on buttons.
  */
@@ -40,9 +41,22 @@ function handleButtonClick(mouseX, mouseY, buttonX, buttonY, buttonWidth, button
 }
 
 /**
- * Initializes event listeners for DOM elements after the page loads.
+ * Updates the mute icons based on the current isMuted state.
+ */
+function updateMuteIcons() {
+  const muteIconMain = document.getElementById("mute-icon-main");
+  const muteIconOverlay = document.getElementById("mute-icon-overlay");
+  const iconSrc = isMuted ? "img/icons/mute.png" : "img/icons/sound.png";
+  muteIconMain.src = iconSrc;
+  muteIconOverlay.src = iconSrc;
+}
+
+/**
+ * Initializes event listeners for DOM elements after the page loads and syncs mute state.
  */
 document.addEventListener("DOMContentLoaded", () => {
+  isMuted = localStorage.getItem("isMuted") === "true" || false;
+  updateMuteIcons();
   const muteButtons = document.querySelectorAll(".mute-button");
   muteButtons.forEach((button) => {
     button.addEventListener("click", () => world.toggleMute());
@@ -52,9 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     button.addEventListener("click", () => {
       if (button.classList.contains("guide-button")) {
         toggleGuideControls();
-      } else if (button.classList.contains("mute-button")) {
-        toggleMuteState();
-      }
+      } else if (button.classList.contains("mute-button")) {toggleMuteState();}
     });
   });
 });
@@ -73,13 +85,10 @@ function toggleGuideControls() {
 }
 
 /**
- * Toggles the mute status and updates the mute icons.
+ * Toggles the mute status, updates the mute icons, and saves to localStorage.
  */
 function toggleMuteState() {
   isMuted = !isMuted;
-  const muteIconMain = document.getElementById("mute-icon-main");
-  const muteIconOverlay = document.getElementById("mute-icon-overlay");
-  const iconSrc = isMuted ? "img/icons/mute.png" : "img/icons/sound.png";
-  muteIconMain.src = iconSrc;
-  muteIconOverlay.src = iconSrc;
+  localStorage.setItem("isMuted", isMuted); 
+  updateMuteIcons(); 
 }

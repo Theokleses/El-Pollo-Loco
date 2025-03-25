@@ -9,7 +9,6 @@ let gameState = "Start";
 function init() {
   canvas = document.getElementById("canvas");
   world = new World(canvas, keyboard);
-  localStorage.setItem('isMuted', 'false');
   addButtonListener();
   turnDeviceScreen = new TurnDeviceScreen();
 }

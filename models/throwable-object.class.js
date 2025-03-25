@@ -32,14 +32,15 @@ class ThrowableObject extends MovableObject {
     }
     
 /**
- * Throws the bottle with an initial upward speed and horizontal movement.
+ * Throws the bottle with an initial upward speed and horizontal movement based on direction.
  */
-throw() {
+throw(throwLeft) {
     this.speedY = 30;
     this.applyGravaty();
     let interval = setInterval(() => {
         if (this.isAboveGround()) {
-            this.x += 3 + Math.random() * 15; 
+            if (throwLeft) {this.x -= 3 + Math.random() * 15; 
+            } else {this.x += 3 + Math.random() * 15;}
         } else {
             clearInterval(interval); 
         }

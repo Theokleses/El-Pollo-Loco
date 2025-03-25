@@ -245,6 +245,19 @@ resetCollisionCooldown() {
     this.collisionCooldown = false;
   }, 200);
 }
+
+/**
+ * Resets the character's properties to their default values.
+ */
+resetCharacter() {
+  this.energy = 100;
+  this.x = 120;
+  this.y = 185;
+  this.speed = 10;
+  this.availableBottles = 0;
+  this.coins = 0;
+  this.otherDirection = false; 
+}
 }
 
 

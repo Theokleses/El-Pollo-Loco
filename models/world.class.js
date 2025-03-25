@@ -1,4 +1,5 @@
 const BUTTON_CONFIG = { x: 0.375, y: 0.09375, width: 0.25, height: 0.1042 };
+const BACK_BUTTON_CONFIG = {x: 0.375, y: 0.25, width: 0.25, height: 0.1042};
 
 class World {
   character = new Character(); canvas; ctx; keyboard; level; camera_x = 0;
@@ -22,6 +23,7 @@ class World {
     this.background_sound.loop = true;
     this.level = null; 
     this.trackMousePosition(); 
+    this.canvas.addEventListener("click", (event) => this.handleCanvasClick(event));
     this.draw();
   }
 
@@ -58,9 +60,11 @@ class World {
     this.endbossStartX = this.endboss.x; 
     this.permanentBottle = new PermanentBottle(2000, 100); 
     this.permanentBottle.y = 100;
+    this.reachEndBoss = false;
     const storedMute = localStorage.getItem('isMuted'); 
     this.isMuted = storedMute === 'true'; 
-    this.toggleWorldSounds(); 
+    this.toggleWorldSounds();
+    this.coinsGap = 600; 
     this.Spawner(); 
     this.run();
   }
@@ -122,21 +126,22 @@ class World {
   }
 
   /** Checks and handles throwing of bottles. */
-  checkThrowObjects() { 
-    if (this.keyboard.D && this.character.availableBottles > 0) { 
-      const currentTime = Date.now(); 
-      if (currentTime - this.lastThrowTime >= this.throwDelay) { 
-        let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 100); 
-        this.throwableObjects.push(bottle); 
-        bottle.throw(); 
-        this.throwing_sound.play(); 
-        this.character.availableBottles--; 
-        this.character.energyBottle = this.character.availableBottles * 20; 
-        this.bottleBar.setBottlePercentage(this.character.energyBottle); 
-        this.lastThrowTime = currentTime; 
-      } 
-    } 
-  }
+  checkThrowObjects() {
+    if (this.keyboard.D && this.character.availableBottles > 0) {
+        const currentTime = Date.now();
+        if (currentTime - this.lastThrowTime >= this.throwDelay) {
+            let bottleX = this.character.otherDirection ? this.character.x + 0 : this.character.x + 100;
+            let bottle = new ThrowableObject(bottleX, this.character.y + 100);
+            this.throwableObjects.push(bottle);
+            bottle.throw(this.character.otherDirection); 
+            this.throwing_sound.play();
+            this.character.availableBottles--;
+            this.character.energyBottle = this.character.availableBottles * 20;
+            this.bottleBar.setBottlePercentage(this.character.energyBottle);
+            this.lastThrowTime = currentTime;
+          }
+      }
+    }
 
   /** Checks if the character has reached the endboss area. */
   checkCharacterPosition() { 
@@ -193,7 +198,7 @@ class World {
         } 
       } else if (enemy instanceof Endboss) enemy.changeSpeed(60); 
     } 
-  }
+  }    
 
   /** Checks collisions between the character and coins. */
   checkCoinCollisions() { 
@@ -278,13 +283,75 @@ class World {
     if (screen) this.addToMap(Object.assign(screen, { x: 0, y: 0, width: this.canvas.width, height: this.canvas.height })); 
     const [absX, absY, absW, absH] = this.getButtonCoordinates(); 
     const isHovered = this.renderButton(screen, buttonText, absX, absY, absW, absH); 
-    if (isHovered) this.canvas.style.cursor = 'pointer'; 
-    if (this.isMusicPlaying) { 
-      this.background_sound.pause(); 
-      this.isMusicPlaying = false; 
-    } 
+    let isBackHovered = false;
+    if (gameState === "Lose" || gameState === "Win") {isBackHovered = this.renderBackButton(screen, "Back to Start");}
+    if (isHovered || isBackHovered) {this.canvas.style.cursor = 'pointer';}
+    if (this.isMusicPlaying) { this.background_sound.pause(); this.isMusicPlaying = false;} 
     document.getElementById("muteButton").classList.add("d_none"); 
     document.getElementById("muteButtonOverlay").classList.add("d_none"); 
+  }
+
+  /** Renders the back button on the screen and checks hover state. */
+  renderBackButton(screen, buttonText) {
+    const absX = BACK_BUTTON_CONFIG.x * this.canvas.width;
+    const absY = BACK_BUTTON_CONFIG.y * this.canvas.height;
+    const absW = BACK_BUTTON_CONFIG.width * this.canvas.width;
+    const absH = BACK_BUTTON_CONFIG.height * this.canvas.height; 
+    const isHovered = this.isButtonHovered(screen, absX, absY, absW, absH);
+    screen.drawButton(this.ctx, BACK_BUTTON_CONFIG.x, BACK_BUTTON_CONFIG.y, BACK_BUTTON_CONFIG.width, BACK_BUTTON_CONFIG.height, buttonText, 
+      {}, 
+      isHovered
+    );
+    return isHovered;
+  }
+  /** Checks if the main button is clicked based on mouse position. */
+  isMainButtonClicked() {
+    const [absX, absY, absW, absH] = this.getButtonCoordinates();
+    return this.mouseX >= absX && this.mouseX <= absX + absW && this.mouseY >= absY && this.mouseY <= absY + absH;
+  }
+
+  /** Resets the game to the start screen state. */
+  goBackToStart() {
+    this.stopAllIntervals();
+    this.background_sound.pause();
+    this.isMusicPlaying = false;
+    gameState = "Start";
+    this.character.resetCharacter();
+    this.statusBar.setPercentage(100);
+    this.coinBar.setCoinPercentage(0);
+    this.bottleBar.setBottlePercentage(0);
+    this.spawnCoin();
+    this.coinsGap = 600;
+  }
+
+  /** Handles canvas click events based on game state. */
+  handleCanvasClick = (event) => { 
+    const rect = this.canvas.getBoundingClientRect();
+    this.mouseX = event.clientX - rect.left;
+    this.mouseY = event.clientY - rect.top;
+
+    if (gameState === "Lose" || gameState === "Win") {
+      if (this.isBackButtonClicked()) {this.goBackToStart();
+        return;
+      }
+
+      if (this.isMainButtonClicked()) {this.resetGame();
+        return;
+      }
+    } else if (gameState === "Start") {
+      if (this.isMainButtonClicked()) {gameState = "Game";this.setWorld();
+        return;
+      }
+    }
+  }
+
+  /** Checks if the back button is clicked based on mouse position. */
+  isBackButtonClicked() {
+    const absX = BACK_BUTTON_CONFIG.x * this.canvas.width;
+    const absY = BACK_BUTTON_CONFIG.y * this.canvas.height;
+    const absW = BACK_BUTTON_CONFIG.width * this.canvas.width;
+    const absH = BACK_BUTTON_CONFIG.height * this.canvas.height;
+    return this.mouseX >= absX && this.mouseX <= absX + absW && this.mouseY >= absY && this.mouseY <= absY + absH;
   }
 
   /** Main drawing loop for the game world. */
@@ -318,14 +385,14 @@ class World {
   }
 
   /** Draws background and status bars. */
-  drawBackgroundAndBars() { 
-    this.ctx.translate(this.camera_x, 0); 
-    this.addObjectToMap(this.level.backgroundObjects); 
-    this.ctx.translate(-this.camera_x, 0); 
-    this.addToMap(this.statusBar); 
-    this.addToMap(this.coinBar); 
-    this.addToMap(this.bottleBar); 
-    if (this.reachEndBoss) this.addToMap(this.endbossBar); 
+  drawBackgroundAndBars() {
+    this.ctx.translate(this.camera_x, 0);
+    this.addObjectToMap(this.level.backgroundObjects);
+    this.ctx.translate(-this.camera_x, 0);
+    this.addToMap(this.statusBar);
+    this.addToMap(this.coinBar);
+    this.addToMap(this.bottleBar);
+    if (this.reachEndBoss && this.endboss) {this.addToMap(this.endbossBar);}
   }
 
   /** Draws interactive game objects. */
