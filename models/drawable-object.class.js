@@ -47,7 +47,7 @@ class DrawableObject {
     // }
   }
 
- /**
+/**
  * Loads multiple images into the image cache.
  */ 
   loadImages(arr) {
@@ -61,38 +61,39 @@ class DrawableObject {
 /**
  * Draws a button on the canvas with hover effects.
  */
-drawButton(ctx, x, y, width, height, text, style = {}, isHovered = false) {
-  const canvasWidth = ctx.canvas.width, canvasHeight = ctx.canvas.height;
-  this.x = x * canvasWidth; this.y = y * canvasHeight;
-  this.width = width * canvasWidth; this.height = height * canvasHeight;
-  ctx.fillStyle = isHovered ? style.hoverBackgroundColor || "#CC7A00" : style.backgroundColor || "#FFCC00";
-  if (isHovered) this.applyHoverEffect(ctx, this.x, this.y, this.width, this.height);
-  this.drawButtonShape(ctx);
-  this.drawButtonText(ctx, text, style, isHovered);
-  if (isHovered) ctx.restore();
-}
+  drawButton(ctx, x, y, width, height, text, style = {}, isHovered = false) {
+    const canvasWidth = ctx.canvas.width, canvasHeight = ctx.canvas.height;
+    this.x = x * canvasWidth; this.y = y * canvasHeight;
+    this.width = width * canvasWidth; this.height = height * canvasHeight;
+    ctx.fillStyle = isHovered ? style.hoverBackgroundColor || "#CC7A00" : style.backgroundColor || "#FFCC00";
+    if (isHovered) this.applyHoverEffect(ctx, this.x, this.y, this.width, this.height);
+    this.drawButtonShape(ctx);
+    this.drawButtonText(ctx, text, style, isHovered);
+    if (isHovered) ctx.restore();
+  }
 
 /**
  * Draws the button shape with border.
  */
-drawButtonShape(ctx) {
-  ctx.beginPath();
-  ctx.roundRect(this.x, this.y, this.width, this.height, 10);
-  ctx.fill();
-  ctx.strokeStyle = "#CC7A00";
-  ctx.lineWidth = 5;
-  ctx.stroke();
-}
+  drawButtonShape(ctx) {
+    ctx.beginPath();
+    ctx.roundRect(this.x, this.y, this.width, this.height, 10);
+    ctx.fill();
+    ctx.strokeStyle = "#CC7A00";
+    ctx.lineWidth = 5;
+    ctx.stroke();
+  }
 
 /**
  * Draws the button text with styling.
  */
-drawButtonText(ctx, text, style, isHovered) {
-  ctx.fillStyle = style.textColor || "white";
-  ctx.font = style.font || "30px Bangers";
-  ctx.textAlign = "center";
-  ctx.fillText(text, this.x + this.width / 2, this.y + this.height / 2 + (isHovered ? 11.3 : 10));
-}
+  drawButtonText(ctx, text, style, isHovered) {
+    ctx.fillStyle = style.textColor || "white";
+    ctx.font = style.font || "30px Bangers";
+    ctx.textAlign = "center";
+    ctx.fillText(text, this.x + this.width / 2, this.y + this.height / 2 + (isHovered ? 11.3 : 10));
+  }
+
 /**
  * Applies a hover effect to the canvas context.
  */
@@ -106,6 +107,7 @@ drawButtonText(ctx, text, style, isHovered) {
     ctx.shadowOffsetX = 5;
     ctx.shadowOffsetY = 5;
   }
+
 /**
  * Checks if the mouse is over the button area.
  */
@@ -116,5 +118,25 @@ drawButtonText(ctx, text, style, isHovered) {
       mouseY >= buttonY &&
       mouseY <= buttonY + buttonHeight
     );
+  }
+
+/**
+  * Determines the image index based on the current percentage.
+  @returns {number} The index of the image to display
+  */
+  resolveImageIndex() {
+    if (this.percentage >= 100) {
+      return 5;
+    } else if (this.percentage >= 80) {
+      return 4;
+    } else if (this.percentage >= 60) {
+      return 3;
+    } else if (this.percentage >= 40) {
+      return 2;
+    } else if (this.percentage >= 20) {
+      return 1;
+    } else {
+      return 0;
+    }
   }
 }

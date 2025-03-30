@@ -3,6 +3,7 @@ class Character extends MovableObject {
   height = 235;
   width = 120;
   collisionHeight = 150;
+  collisionWidth = 50;
   speed = 10;
   availableBottles = 0;
   energyBottle = 0;
@@ -169,6 +170,7 @@ updateAnimation() {
  */
 updateCollisionBox() {
   this.collisionY = this.y + 85;
+  this.collisionX = this.x + (this.width - this.collisionWidth) / 2;
 }
 
 /**
@@ -255,6 +257,7 @@ resetCharacter() {
   this.y = 185;
   this.speed = 10;
   this.availableBottles = 0;
+  this.availableCoins = 0; 
   this.coins = 0;
   this.otherDirection = false; 
 }

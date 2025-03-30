@@ -32,7 +32,7 @@ class PermanentBottle extends MovableObject {
    * Draws instructional text above the bottle on the canvas.
    */
   drawText(ctx) {
-    ctx.font = "20px zabras";
+    ctx.font = "20px zabars";
     ctx.fillStyle = "black";
     ctx.textAlign = "center";
     ctx.fillText("Fill your Bottles here!", this.x + this.width / 2, this.y - 10);

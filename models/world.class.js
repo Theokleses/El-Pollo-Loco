@@ -1,5 +1,5 @@
 const BUTTON_CONFIG = { x: 0.375, y: 0.09375, width: 0.25, height: 0.1042 };
-const BACK_BUTTON_CONFIG = {x: 0.375, y: 0.25, width: 0.25, height: 0.1042};
+const BACK_BUTTON_CONFIG = { x: 0.68,  y: 0.106, width: 0.08, height: 0.08,iconSize: 0.03 };
 
 class World {
   character = new Character(); canvas; ctx; keyboard; level; camera_x = 0;
@@ -16,6 +16,8 @@ class World {
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d"); 
     this.canvas = canvas; 
+    this.ui = new UIHelper(this.ctx, canvas);
+    this.renderer = new RenderManager(this.ctx, this);
     this.mouseX = 0; 
     this.mouseY = 0;
     this.keyboard = keyboard; 
@@ -80,7 +82,9 @@ class World {
     this.canvas.addEventListener("mousemove", (event) => { 
       const rect = this.canvas.getBoundingClientRect(); 
       this.mouseX = event.clientX - rect.left; 
-      this.mouseY = event.clientY - rect.top; 
+      this.mouseY = event.clientY - rect.top;
+      this.ui.mouseX = this.mouseX;
+      this.ui.mouseY = this.mouseY; 
     }); 
   }
 
@@ -145,7 +149,7 @@ class World {
 
   /** Checks if the character has reached the endboss area. */
   checkCharacterPosition() { 
-    if (this.character.x > 2000) this.reachEndBoss = true; 
+    if (this.character.x > 2000) this.reachEndBoss = true;
   }
 
   /** Updates the endboss state based on distance to the character. */
@@ -257,11 +261,7 @@ class World {
 
   /** Returns the absolute coordinates of the button. */
   getButtonCoordinates() { 
-    return [
-      BUTTON_CONFIG.x * this.canvas.width, 
-      BUTTON_CONFIG.y * this.canvas.height, 
-      BUTTON_CONFIG.width * this.canvas.width, 
-      BUTTON_CONFIG.height * this.canvas.height
+    return [ BUTTON_CONFIG.x * this.canvas.width, BUTTON_CONFIG.y * this.canvas.height, BUTTON_CONFIG.width * this.canvas.width, BUTTON_CONFIG.height * this.canvas.height
     ]; 
   }
 
@@ -290,20 +290,12 @@ class World {
     document.getElementById("muteButton").classList.add("d_none"); 
     document.getElementById("muteButtonOverlay").classList.add("d_none"); 
   }
-
-  /** Renders the back button on the screen and checks hover state. */
-  renderBackButton(screen, buttonText) {
-    const absX = BACK_BUTTON_CONFIG.x * this.canvas.width;
-    const absY = BACK_BUTTON_CONFIG.y * this.canvas.height;
-    const absW = BACK_BUTTON_CONFIG.width * this.canvas.width;
-    const absH = BACK_BUTTON_CONFIG.height * this.canvas.height; 
-    const isHovered = this.isButtonHovered(screen, absX, absY, absW, absH);
-    screen.drawButton(this.ctx, BACK_BUTTON_CONFIG.x, BACK_BUTTON_CONFIG.y, BACK_BUTTON_CONFIG.width, BACK_BUTTON_CONFIG.height, buttonText, 
-      {}, 
-      isHovered
-    );
-    return isHovered;
+  
+  /** Checks if the mouse is within a circular area defined by center (cx, cy) and radius r. */
+  isMouseOver(cx, cy, r) {
+    return Math.sqrt((this.mouseX-cx)**2 + (this.mouseY-cy)**2) <= r;
   }
+
   /** Checks if the main button is clicked based on mouse position. */
   isMainButtonClicked() {
     const [absX, absY, absW, absH] = this.getButtonCoordinates();
@@ -347,11 +339,16 @@ class World {
 
   /** Checks if the back button is clicked based on mouse position. */
   isBackButtonClicked() {
-    const absX = BACK_BUTTON_CONFIG.x * this.canvas.width;
-    const absY = BACK_BUTTON_CONFIG.y * this.canvas.height;
-    const absW = BACK_BUTTON_CONFIG.width * this.canvas.width;
-    const absH = BACK_BUTTON_CONFIG.height * this.canvas.height;
-    return this.mouseX >= absX && this.mouseX <= absX + absW && this.mouseY >= absY && this.mouseY <= absY + absH;
+    return this.ui.isButtonClicked(this.mouseX, this.mouseY, BACK_BUTTON_CONFIG);
+  }
+  
+  /** Renders a back button with a house icon and hover effect on the canvas. */
+  renderBackButton() {
+    const { cx, cy, r } = this.ui.getButtonCenter(BACK_BUTTON_CONFIG);
+    const hovered = this.ui.isMouseOver(this.mouseX, this.mouseY, cx - r, cy - r, r * 2, r * 2);
+    this.ui.drawButtonBase(cx, cy, r, hovered);
+    this.ui.drawHouseIcon(cx, cy, hovered);
+    return hovered;
   }
 
   /** Main drawing loop for the game world. */
@@ -380,39 +377,8 @@ class World {
     document.getElementById("muteButton").classList.remove("d_none"); 
     document.getElementById("muteButtonOverlay").classList.remove("d_none"); 
     this.canvas.style.cursor = 'default'; 
-    this.drawBackgroundAndBars(); 
-    this.drawInteractiveObjects(); 
-  }
-
-  /** Draws background and status bars. */
-  drawBackgroundAndBars() {
-    this.ctx.translate(this.camera_x, 0);
-    this.addObjectToMap(this.level.backgroundObjects);
-    this.ctx.translate(-this.camera_x, 0);
-    this.addToMap(this.statusBar);
-    this.addToMap(this.coinBar);
-    this.addToMap(this.bottleBar);
-    if (this.reachEndBoss && this.endboss) {this.addToMap(this.endbossBar);}
-  }
-
-  /** Draws interactive game objects. */
-  drawInteractiveObjects() { 
-    this.ctx.translate(this.camera_x, 0); 
-    if (this.character) { 
-      Object.assign(this.character, { 
-        x: this.character.x || 1, y: this.character.y || 85, width: this.character.width || 120, height: this.character.height || 235, world: this}); 
-      if (!this.character.animationStarted) { this.character.startAnimation(); this.character.animationStarted = true; 
-      } 
-      this.addToMap(this.character); 
-    } 
-    this.addObjectToMap(this.level.coins); 
-    this.addObjectToMap(this.level.bottles); 
-    this.addToMap(this.permanentBottle); 
-    this.permanentBottle.drawText(this.ctx); 
-    this.addObjectToMap(this.level.clouds); 
-    this.addObjectToMap(this.level.enemies); 
-    this.addObjectToMap(this.throwableObjects); 
-    this.ctx.translate(-this.camera_x, 0); 
+    this.renderer.drawBackgroundAndBars();
+    this.renderer.drawInteractiveObjects();
   }
 
   /** Resets the game to its initial state. */
