@@ -41,35 +41,34 @@ function handleButtonClick(mouseX, mouseY, buttonX, buttonY, buttonWidth, button
 }
 
 /**
- * Updates the mute icons based on the current isMuted state.
- */
-function updateMuteIcons() {
-  const muteIconMain = document.getElementById("mute-icon-main");
-  const muteIconOverlay = document.getElementById("mute-icon-overlay");
-  const iconSrc = isMuted ? "img/icons/mute.png" : "img/icons/sound.png";
-  muteIconMain.src = iconSrc;
-  muteIconOverlay.src = iconSrc;
-}
-
-/**
- * Initializes event listeners for DOM elements after the page loads and syncs mute state.
+ * Initializes mute buttons and syncs state
  */
 document.addEventListener("DOMContentLoaded", () => {
   isMuted = localStorage.getItem("isMuted") === "true" || false;
   updateMuteIcons();
-  const muteButtons = document.querySelectorAll(".mute-button");
-  muteButtons.forEach((button) => {
-    button.addEventListener("click", () => world.toggleMute());
+
+  document.querySelectorAll(".mute-button").forEach(button => {
+    button.onclick = () => {
+      world.toggleMute();
+      isMuted = !isMuted; 
+      localStorage.setItem("isMuted", isMuted);
+      updateMuteIcons(); 
+    };
   });
-  const toggleButtons = document.querySelectorAll(".toggle-button");
-  toggleButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      if (button.classList.contains("guide-button")) {
-        toggleGuideControls();
-      } else if (button.classList.contains("mute-button")) {toggleMuteState();}
-    });
+  document.querySelectorAll(".guide-button").forEach(button => {
+    button.onclick = toggleGuideControls;
   });
 });
+
+/**
+ * Updates all mute icons based on the current isMuted state.
+ */
+function updateMuteIcons() {
+  const iconPath = isMuted ? "img/icons/mute.png" : "img/icons/sound.png";
+  document.getElementById("mute-icon-main").src = iconPath;
+  const overlayIcon = document.getElementById("mute-icon-overlay");
+  if (overlayIcon) overlayIcon.src = iconPath;
+}
 
 /**
  * Toggles the visibility of the controls container and updates the icons.
