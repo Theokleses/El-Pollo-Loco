@@ -23,6 +23,10 @@ class World {
     this.keyboard = keyboard; 
     this.character.world = this; 
     this.background_sound.loop = true;
+    this.coin_sound.volume = 0.1;
+    this.bottle_sound.volume = 0.1;
+    this.throwing_sound.volume = 0.3;
+    this.background_sound.volume = 0.2; 
     this.level = null; 
     this.trackMousePosition(); 
     this.canvas.addEventListener("click", (event) => this.handleCanvasClick(event));
@@ -30,7 +34,7 @@ class World {
   }
 
   /** Starts the main game loop. */
-  run() { 
+  run() {
     this.runInterval = setInterval(() => { 
       this.checkCollisions(); 
       this.checkThrowObjects(); 
@@ -117,6 +121,9 @@ class World {
     this.level.enemies.forEach(enemy => { 
       if (enemy instanceof Endboss) enemy.toggleMute(); 
     }); 
+    this.level.enemies.forEach(enemy => {
+      if (enemy instanceof BigChicken || enemy instanceof Chicken) {enemy.toggleMute();}
+    });
     this.character.toggleMute(); 
     this.toggleWorldSounds(); 
   }

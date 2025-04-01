@@ -13,6 +13,10 @@ class Character extends MovableObject {
   idleSleepTimer = 450;
   isStanding = false;
   jumpDamageCooldown = false;
+  currentJumpFrame = 0;
+  isJumping = false;
+  jumpAnimationCompleted = false;
+  jumpAnimationSpeed = 90; 
 
   IMAGES_WALKING = [
     "img/2_character_pepe/2_walk/W-21.png",
@@ -24,7 +28,7 @@ class Character extends MovableObject {
   ];
 
   IMAGES_JUMPING = [
-    "img/2_character_pepe/3_jump/J-31.png",
+    // "img/2_character_pepe/3_jump/J-31.png",
     "img/2_character_pepe/3_jump/J-32.png",
     "img/2_character_pepe/3_jump/J-33.png",
     "img/2_character_pepe/3_jump/J-34.png",
@@ -32,6 +36,7 @@ class Character extends MovableObject {
     "img/2_character_pepe/3_jump/J-36.png",
     "img/2_character_pepe/3_jump/J-37.png",
     "img/2_character_pepe/3_jump/J-38.png",
+    "img/2_character_pepe/3_jump/J-39.png",
   ];
 
   IMAGES_IDLE = [
@@ -141,9 +146,17 @@ handleMoveLeft() {
  * Handles the character's jump.
  */
 handleJump() {
-  this.jump();
-  this.idleCounter = 0;
-  this.jumping_sound.play();
+  if (!this.isAboveGround() && !this.isJumping) {  
+    this.jump();
+    this.idleCounter = 0;
+    if (!this.isMuted) {this.jumping_sound.currentTime = 0; this.jumping_sound.play();}
+    this.currentJumpFrame = 0;
+    this.isJumping = true;
+    this.jumpAnimationCompleted = false;
+    this.lastAnimationTime = Date.now();
+    this.img = this.imageCache[this.IMAGES_JUMPING[0]];
+    this.currentJumpFrame = 1;
+  }
 }
 
 /**
@@ -158,11 +171,41 @@ handleIdle() {
  * Updates the animation based on the character's state.
  */
 updateAnimation() {
-  if (this.isDead()) this.playAnimation(this.IMAGES_DEAD);
-  else if (this.isHurt()) this.playAnimation(this.IMAGES_HURT);
-  else if (this.isAboveGround()) this.playAnimation(this.IMAGES_JUMPING);
-  else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)
-    this.playAnimation(this.IMAGES_WALKING);
+  if (this.isDead()) {
+    this.playAnimation(this.IMAGES_DEAD);
+  } else if (this.isHurt()) {
+    this.playAnimation(this.IMAGES_HURT);
+  } else if (this.isAboveGround()) {
+    if (!this.jumpAnimationCompleted) {
+      this.playJumpAnimationOnce();
+    } else {this.img = this.imageCache[this.IMAGES_JUMPING[this.IMAGES_JUMPING.length - 1]];
+
+    }
+  } else {
+    this.isJumping = false;
+    this.jumpAnimationCompleted = false;
+    if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) { this.playAnimation(this.IMAGES_WALKING);
+    } else {
+      this.handleIdle();
+    }
+  }
+}
+
+  /**
+   * Plays the jump animation once (instead of looping).
+   */
+playJumpAnimationOnce() {
+  const now = Date.now();
+  if (now - this.lastAnimationTime >= this.jumpAnimationSpeed) {
+    if (this.currentJumpFrame < this.IMAGES_JUMPING.length) {
+      let path = this.IMAGES_JUMPING[this.currentJumpFrame];
+      this.img = this.imageCache[path];
+      this.currentJumpFrame++;
+      this.lastAnimationTime = now;
+    } else {
+      this.jumpAnimationCompleted = true;
+    }
+  }
 }
 
 /**

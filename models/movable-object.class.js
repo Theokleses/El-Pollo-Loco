@@ -15,13 +15,16 @@ class MovableObject extends DrawableObject {
     this.lose_sound,
     this.walking_sound,
     this.jumping_sound,
-    this.hurt_sound,
+    this.hurt_sound
   ];
 
   constructor() {
     super();
     this.isMuted = localStorage.getItem("isMuted") === "true";
     this.sounds.forEach((sound) => (sound.muted = this.isMuted));
+    this.walking_sound.volume = 0.4;
+    this.hurt_sound.volume = 0.3;
+    this.jumping_sound.volume = 0.3;
   }
 
   /**
@@ -130,86 +133,45 @@ class MovableObject extends DrawableObject {
   isDead() {
     return this.energy === 0;
   }
+
   /**
    * Checks if this object collides with another object.
    */  
-  // isColliding(mo) {
-  //   const thisCollisionHeight = this.collisionHeight || this.height;
-  //   const thisCollisionY = this.collisionY || this.y;
-  //   const moCollisionHeight = mo.collisionHeight || mo.height;
-  //   const moCollisionY = mo.collisionY || mo.y;
-  //   return (
-  //     this.x + this.width > mo.x &&
-  //     thisCollisionY + thisCollisionHeight > moCollisionY &&
-  //     this.x < mo.x + mo.width &&
-  //     thisCollisionY < moCollisionY + moCollisionHeight
-  //   );
-  // }
+  isColliding(mo) {
+    const thisCollisionX = this.collisionX || this.x;
+    const thisCollisionWidth = this.collisionWidth || this.width;
+    const thisCollisionHeight = this.collisionHeight || this.height;
+    const thisCollisionY = this.collisionY || this.y;
+    
+    const moCollisionX = mo.collisionX || mo.x;
+    const moCollisionWidth = mo.collisionWidth || mo.width;
+    const moCollisionHeight = mo.collisionHeight || mo.height;
+    const moCollisionY = mo.collisionY || mo.y;
+    
+    return (
+        thisCollisionX + thisCollisionWidth > moCollisionX &&
+        thisCollisionY + thisCollisionHeight > moCollisionY &&
+        thisCollisionX < moCollisionX + moCollisionWidth &&
+        thisCollisionY < moCollisionY + moCollisionHeight
+    );
+  }
+
 
   /**
    * Checks if the legs of this object collide with another object.
-   */
-//   isLegsColliding(mo) {
-//     const offset = 1;
-//     const legsY = this.y + this.height * 0.7;
-//     const legsHeight = this.height * 0.3;     
-//     const feetWidth = this.width * 0.2;      
-//     const feetX = this.x + (this.width - feetWidth) / 2; 
+   */  
+  isLegsColliding(mo) {
+    const offset = 1;
+    const legsY = this.collisionY + this.collisionHeight * 0.7;
+    const legsHeight = this.collisionHeight * 0.3;
+    const feetWidth = this.collisionWidth; // Volle Breite der Kollisionsbox
+    const feetX = this.collisionX; // Keine Zentrierung nötig
 
-//     return (
-//         feetX + feetWidth > mo.x - offset &&      
-//         legsY + legsHeight > mo.y - offset &&     
-//         feetX < mo.x + mo.width + offset &&       
-//         legsY < mo.y + mo.height + offset   
-//     );
-// }
-
-
-/**
- * Checks if this object collides with another object.
- */  
-isColliding(mo) {
-  const thisCollisionX = this.collisionX || this.x;
-  const thisCollisionWidth = this.collisionWidth || this.width;
-  const thisCollisionHeight = this.collisionHeight || this.height;
-  const thisCollisionY = this.collisionY || this.y;
-  
-  const moCollisionX = mo.collisionX || mo.x;
-  const moCollisionWidth = mo.collisionWidth || mo.width;
-  const moCollisionHeight = mo.collisionHeight || mo.height;
-  const moCollisionY = mo.collisionY || mo.y;
-  
-  return (
-      thisCollisionX + thisCollisionWidth > moCollisionX &&
-      thisCollisionY + thisCollisionHeight > moCollisionY &&
-      thisCollisionX < moCollisionX + moCollisionWidth &&
-      thisCollisionY < moCollisionY + moCollisionHeight
-  );
-}
-
-
-
-isLegsColliding(mo) {
-  const offset = 1;
-  const legsY = this.collisionY + this.collisionHeight * 0.7;
-  const legsHeight = this.collisionHeight * 0.3;
-  const feetWidth = this.collisionWidth; // Volle Breite der Kollisionsbox
-  const feetX = this.collisionX; // Keine Zentrierung nötig
-
-  return (
-      feetX + feetWidth > mo.x - offset &&      
-      legsY + legsHeight > mo.y - offset &&     
-      feetX < mo.x + mo.width + offset &&       
-      legsY < mo.y + mo.height + offset   
-  );
-}
-
-// isColliding(mo) {
-//   return (
-//       this.collisionX + this.collisionWidth > mo.x &&
-//       this.collisionY + this.collisionHeight > mo.y &&
-//       this.collisionX < mo.x + mo.width &&
-//       this.collisionY < mo.y + mo.height
-//   );
-// }
+    return (
+        feetX + feetWidth > mo.x - offset &&      
+        legsY + legsHeight > mo.y - offset &&     
+        feetX < mo.x + mo.width + offset &&       
+        legsY < mo.y + mo.height + offset   
+    );
+  }
 }

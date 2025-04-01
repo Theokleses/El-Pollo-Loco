@@ -27,42 +27,55 @@ class ThrowableObject extends MovableObject {
         this.width = 70;
         this.currentImageIndex = 0;
         this.hasCollided = false;
-        this.hasHitGround = false; 
+        this.hasHitGround = false;
+        this.splashSound = new Audio('audio/bottle-splash.mp3'); 
+        this.splashSound.volume = 0.3;
+        this.splashSoundPlayed = false; 
+        this.isMuted = localStorage.getItem("isMuted") === "true";
+        this.splashSound.muted = this.isMuted;
         this.animate();
     }
     
-/**
- * Throws the bottle with an initial upward speed and horizontal movement based on direction.
- */
-throw(throwLeft) {
-    this.speedY = 30;
-    this.applyGravaty();
-    let interval = setInterval(() => {
-        if (this.isAboveGround()) {
-            if (throwLeft) {this.x -= 3 + Math.random() * 15; 
-            } else {this.x += 3 + Math.random() * 15;}
-        } else {
-            clearInterval(interval); 
-        }
-    }, 25);
-}
+    /**
+     * Throws the bottle with an initial upward speed and horizontal movement based on direction.
+     */
+    throw(throwLeft) {
+        this.speedY = 30;
+        this.applyGravaty();
+        let interval = setInterval(() => {
+            if (this.isAboveGround()) {
+                if (throwLeft) {
+                    this.x -= 3 + Math.random() * 15; 
+                } else {
+                    this.x += 3 + Math.random() * 15;
+                }
+            } else {
+                clearInterval(interval); 
+            }
+        }, 25);
+    }
 
-/**
- * Starts the animation of the bottle based on its state.
- */
-animate() {
-    setInterval(() => {
-        if (this.hasCollided) {
-            this.currentImageIndex = (this.currentImageIndex + 1) % this.BOTTLE_SPLASH.length;
-            this.loadImage(this.BOTTLE_SPLASH[this.currentImageIndex]);
-        } else if (!this.isAboveGround()) {
-            this.loadImage(this.BOTTLE_GROUND[0]);
-            this.hasHitGround = true;
-        } else {
-            this.currentImageIndex = (this.currentImageIndex + 1) % this.BOTTLE_ROTATE.length;
-            this.loadImage(this.BOTTLE_ROTATE[this.currentImageIndex]);
-        }
-    }, 100);
-}
-
+    /**
+     * Starts the animation of the bottle based on its state.
+     */
+    animate() {
+        setInterval(() => {
+            if (this.hasCollided) {
+                // Spiel den Sound nur beim ersten Frame der Splash-Animation
+                if (!this.splashSoundPlayed) {
+                    this.splashSound.play();
+                    this.splashSoundPlayed = true;
+                }
+                
+                this.currentImageIndex = (this.currentImageIndex + 1) % this.BOTTLE_SPLASH.length;
+                this.loadImage(this.BOTTLE_SPLASH[this.currentImageIndex]);
+            } else if (!this.isAboveGround()) {
+                this.loadImage(this.BOTTLE_GROUND[0]);
+                this.hasHitGround = true;
+            } else {
+                this.currentImageIndex = (this.currentImageIndex + 1) % this.BOTTLE_ROTATE.length;
+                this.loadImage(this.BOTTLE_ROTATE[this.currentImageIndex]);
+            }
+        }, 100);
+    }
 }
