@@ -311,10 +311,10 @@ class World {
 
   /** Resets the game to the start screen state. */
   goBackToStart() {
+    gameState = "Start";
     this.stopAllIntervals();
     this.background_sound.pause();
     this.isMusicPlaying = false;
-    gameState = "Start";
     this.character.resetCharacter();
     this.statusBar.setPercentage(100);
     this.coinBar.setCoinPercentage(0);
@@ -390,18 +390,20 @@ class World {
 
   /** Resets the game to its initial state. */
   resetGame() { 
-    this.background_sound.volume = 0; 
-    this.throwing_sound.volume = 0; 
     this.stopAllIntervals(); 
+    this.character.resetCharacter(); 
     this.character.energy = 100; 
     this.character.lastHit = null; 
     this.character.collisionCooldown = false; 
-    this.character.x = 120; 
-    this.level = level1; 
+    this.level = null; 
+    this.throwableObjects = []; 
     this.statusBar.setPercentage(100); 
+    this.coinBar.setCoinPercentage(0); 
+    this.bottleBar.setBottlePercentage(0); 
     this.reachEndBoss = false; 
-    this.character.muteAllSounds(); 
-    startNewGame(); 
+    this.coinsGap = 600;
+    gameState = "Game";
+    this.setWorld(); 
   }
 
   /** Adds a single object to the map with optional flipping. */

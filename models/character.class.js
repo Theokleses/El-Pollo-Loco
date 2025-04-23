@@ -17,6 +17,7 @@ class Character extends MovableObject {
   isJumping = false;
   jumpAnimationCompleted = false;
   jumpAnimationSpeed = 90; 
+  isDeathAnimationComplete = false; 
 
   IMAGES_WALKING = [
     "img/2_character_pepe/2_walk/W-21.png",
@@ -93,6 +94,10 @@ class Character extends MovableObject {
     this.sounds.forEach((sound) => (sound.muted = this.isMuted));
     this.applyGravaty();
     this.updateCollisionBox();
+
+    this.isDeathAnimationComplete = false;
+    this.deathAnimationStarted = false;
+    this.currentDeathFrame = 0
   }
 
 /**
@@ -190,6 +195,31 @@ updateAnimation() {
     }
   }
 }
+
+/**
+ * Plays the death animation once (instead of looping)
+ */
+// playDeathAnimationOnce() {
+//   if (!this.deathAnimationStarted) {
+//     this.deathAnimationStarted = true;
+//     this.currentDeathFrame = 0;
+//     this.lastDeathAnimationTime = Date.now();
+//   }
+
+//   const now = Date.now();
+//   if (now - this.lastDeathAnimationTime >= 100) { // Geschwindigkeit der Death-Animation
+//     if (this.currentDeathFrame < this.IMAGES_DEAD.length) {
+//       let path = this.IMAGES_DEAD[this.currentDeathFrame];
+//       this.img = this.imageCache[path];
+//       this.currentDeathFrame++;
+//       this.lastDeathAnimationTime = now;
+//     } else {
+//       this.isDeathAnimationComplete = true;
+//       // Setze das letzte Bild der Animation als permanentes Bild
+//       this.img = this.imageCache[this.IMAGES_DEAD[this.IMAGES_DEAD.length - 1]];
+//     }
+//   }
+// }
 
   /**
    * Plays the jump animation once (instead of looping).
@@ -297,13 +327,16 @@ resetCollisionCooldown() {
 resetCharacter() {
   this.energy = 100;
   this.x = 120;
-  this.y = 185;
+  // this.y = 185;
   this.speed = 10;
   this.availableBottles = 0;
   this.availableCoins = 0; 
   this.coins = 0;
   this.otherDirection = false; 
+  this.isDeathAnimationComplete = false;
+  this.deathAnimationStarted = false;
 }
+
 }
 
 
