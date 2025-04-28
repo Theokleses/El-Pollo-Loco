@@ -11,6 +11,12 @@ class World {
   coin_sound = new Audio("audio/coin.mp3"); bottle_sound = new Audio("audio/bottle.mp3");
   mouseX = 0; mouseY = 0; lastThrowTime = 0; throwDelay = 750; endbossStartX; permanentBottle; bottleTimer;
   runInterval; intervals = [];
+  enemiesGap = 600;
+  enemySpawnActive = true;
+  lastEnemySpawnTime = 0;
+  enemySpawnCooldown = 1500; 
+  maxEnemies = 10; 
+  
 
   /** Initializes the game world with canvas and keyboard. */
   constructor(canvas, keyboard) {
@@ -32,18 +38,19 @@ class World {
     this.canvas.addEventListener("click", (event) => this.handleCanvasClick(event));
     this.draw();
   }
-
+  
   /** Starts the main game loop. */
   run() {
-    this.runInterval = setInterval(() => { 
-      this.checkCollisions(); 
-      this.checkThrowObjects(); 
-      this.checkCharacterPosition(); 
-      this.checkEndbossDistance(); 
-      this.checkPermanentBottleCollision(); 
+    this.runInterval = setInterval(() => {
+        this.checkCollisions();
+        this.checkThrowObjects();
+        this.checkCharacterPosition();
+        this.checkEndbossDistance();
+        this.checkPermanentBottleCollision();
+        this.spawnEnemies();
     }, 100); 
-    this.intervals.push(this.runInterval); 
-  }
+    this.intervals.push(this.runInterval);
+}
 
   /** Stops all active intervals in the world. */
   stopAllIntervals() { 
@@ -71,6 +78,8 @@ class World {
     this.isMuted = storedMute === 'true'; 
     this.toggleWorldSounds();
     this.coinsGap = 600; 
+    this.enemiesGap = 600;
+    this.enemySpawnActive = true;
     this.Spawner(); 
     this.run();
   }
@@ -80,6 +89,63 @@ class World {
     this.spawnCoin(); 
     this.spawnBottle(); 
   }
+
+  /** Spawns new enemies if the character hasn't reached x = 2000 and enemy limit isn't reached. */
+  // spawnEnemies() {
+  //   if (!this.enemySpawnActive || this.character.x >= 2000) return;
+
+  //   // Spawne 2-3 Gegner gleichzeitig
+  //   const spawnCount = Math.floor(2 + Math.random() * 2); 
+    
+  //   for (let i = 0; i < spawnCount; i++) {
+  //       const isBigChicken = Math.random() < 0.3;
+  //       const newEnemy = isBigChicken ? new BigChicken() : new Chicken();
+  //       newEnemy.x = this.enemiesGap + (i * 100);
+  //       this.level.enemies.push(newEnemy);
+  //   }
+  //   this.enemiesGap += 300 + Math.random() * 200;
+  // }
+
+  // spawnEnemies() {
+  //   if (!this.enemySpawnActive || this.character.x >= 2000) return;
+
+  //   const currentTime = Date.now();
+  //   if (currentTime - this.lastEnemySpawnTime < this.enemySpawnCooldown) return;
+
+  //   const spawnCount = Math.floor(2 + Math.random() * 2);
+  //   for (let i = 0; i < spawnCount; i++) {
+  //     const isBigChicken = Math.random() < 0.3;
+  //     const newEnemy = isBigChicken ? new BigChicken() : new Chicken();
+  //     newEnemy.world = this; // World-Referenz weitergeben
+  //     newEnemy.x = this.enemiesGap + (i * 100);
+  //     this.level.enemies.push(newEnemy);
+  //   }
+  //   this.enemiesGap += 250 + Math.random() * 150;
+  //   this.lastEnemySpawnTime = currentTime; // Letzte Spawn-Zeit aktualisieren
+  // }
+
+  spawnEnemies() {
+    if (!this.enemySpawnActive || this.character.x >= 2000) return;
+
+    // Prüfen, ob die maximale Anzahl an Gegnern erreicht ist
+    if (this.level.enemies.length >= this.maxEnemies) return;
+
+    // Prüfen, ob der Cooldown abgelaufen ist
+    const currentTime = Date.now();
+    if (currentTime - this.lastEnemySpawnTime < this.enemySpawnCooldown) return;
+
+    const spawnCount = Math.floor(2 + Math.random() * 2);
+    for (let i = 0; i < spawnCount; i++) {
+      const isBigChicken = Math.random() < 0.3;
+      const newEnemy = isBigChicken ? new BigChicken() : new Chicken();
+      newEnemy.world = this; // World-Referenz weitergeben
+      newEnemy.x = this.enemiesGap + (i * 100);
+      this.level.enemies.push(newEnemy);
+    }
+    this.enemiesGap += 400 + Math.random() * 200;
+    this.lastEnemySpawnTime = currentTime; // Letzte Spawn-Zeit aktualisieren
+  }
+  
 
   /** Tracks the mouse position on the canvas. */
   trackMousePosition() { 
@@ -155,9 +221,13 @@ class World {
     }
 
   /** Checks if the character has reached the endboss area. */
-  checkCharacterPosition() { 
-    if (this.character.x > 2000) this.reachEndBoss = true;
-  }
+  checkCharacterPosition() {
+    if (this.character.x >= 2000) {
+      this.enemySpawnActive = false; 
+      this.reachEndBoss = true;
+      this.level.enemies = this.level.enemies.filter(e => e instanceof Endboss);
+    }
+}
 
   /** Updates the endboss state based on distance to the character. */
   checkEndbossDistance() { 
@@ -321,6 +391,7 @@ class World {
     this.bottleBar.setBottlePercentage(0);
     this.spawnCoin();
     this.coinsGap = 600;
+    this.enemySpawnActive = true;
   }
 
   /** Handles canvas click events based on game state. */
@@ -402,6 +473,8 @@ class World {
     this.bottleBar.setBottlePercentage(0); 
     this.reachEndBoss = false; 
     this.coinsGap = 600;
+    this.enemiesGap = 600;
+    this.enemySpawnActive = true;
     gameState = "Game";
     this.setWorld(); 
   }

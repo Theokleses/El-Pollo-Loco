@@ -52,6 +52,9 @@ class Endboss extends MovableObject {
     this.loadImages(this.IMAGES_WALK);
     this.loadImages(this.IMAGES_HURT);
     this.loadImages(this.IMAGES_DEAD);
+    this.acceleration = 0; 
+    this.speedY = 0; 
+    this.isFalling = false;       
     this.x = 2800;
     this.speed = 0;
     this.stateAlert = true;
@@ -64,13 +67,14 @@ class Endboss extends MovableObject {
     this.updateSoundMuteState();
     this.animate();
   }
+
   /**
    * Starts the animations of the boss based on its state.
    */
   animate() {
     setInterval(() => {
       if (this.isDead()) {
-        this.playDeathAnimation();
+        this.handleDeath();
       } else if (this.isHurt()) {
         this.changeSpeed(20);
         this.stateAlert = false;
@@ -87,17 +91,20 @@ class Endboss extends MovableObject {
     }, 200);
   }
 
-
   /**
-   * Plays the death animation with sound effect.
+   * Handles the death animation with sound effect.
    */
-    playDeathAnimation() {
+    handleDeath() {
       if (!this.deathSoundPlayed) {
-        this.deathSound.currentTime = 0;
         this.deathSound.play();
         this.deathSoundPlayed = true;
       }
       this.playAnimation(this.IMAGES_DEAD);
+      setInterval(() => {
+        if (!this.isFalling) {
+          this.startFalling();
+        }
+      }, 500);
     }
 
   /**
@@ -114,4 +121,23 @@ class Endboss extends MovableObject {
     this.sounds.forEach(sound => sound.muted = this.isMuted);
   }
 
+  /**
+   * Makes the object fall downward continuously when dead.
+   */
+  startFalling() {
+    this.isFalling = true;
+    this.acceleration = 4;
+    this.speedY = 0;
+  
+    const fallInterval = setInterval(() => {
+      this.y -= this.speedY;
+      this.speedY -= this.acceleration;
+
+      const canvasHeight = this.world?.canvas?.height || 720;
+      if (this.y > canvasHeight + 100) {
+        clearInterval(fallInterval);
+        this.y = -1000;
+      }
+    }, 1000 / 60);
+  }
 }

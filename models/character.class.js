@@ -4,7 +4,7 @@ class Character extends MovableObject {
   width = 120;
   collisionHeight = 150;
   collisionWidth = 50;
-  speed = 10;
+  speed = 4;
   availableBottles = 0;
   energyBottle = 0;
   availableCoins = 0;
@@ -18,6 +18,7 @@ class Character extends MovableObject {
   jumpAnimationCompleted = false;
   jumpAnimationSpeed = 90; 
   isDeathAnimationComplete = false; 
+  isFalling = false; 
 
   IMAGES_WALKING = [
     "img/2_character_pepe/2_walk/W-21.png",
@@ -29,7 +30,7 @@ class Character extends MovableObject {
   ];
 
   IMAGES_JUMPING = [
-    // "img/2_character_pepe/3_jump/J-31.png",
+    "img/2_character_pepe/3_jump/J-31.png",
     "img/2_character_pepe/3_jump/J-32.png",
     "img/2_character_pepe/3_jump/J-33.png",
     "img/2_character_pepe/3_jump/J-34.png",
@@ -178,6 +179,7 @@ handleIdle() {
 updateAnimation() {
   if (this.isDead()) {
     this.playAnimation(this.IMAGES_DEAD);
+    this.startFalling();
   } else if (this.isHurt()) {
     this.playAnimation(this.IMAGES_HURT);
   } else if (this.isAboveGround()) {
@@ -196,30 +198,23 @@ updateAnimation() {
   }
 }
 
-/**
- * Plays the death animation once (instead of looping)
- */
-// playDeathAnimationOnce() {
-//   if (!this.deathAnimationStarted) {
-//     this.deathAnimationStarted = true;
-//     this.currentDeathFrame = 0;
-//     this.lastDeathAnimationTime = Date.now();
-//   }
-
-//   const now = Date.now();
-//   if (now - this.lastDeathAnimationTime >= 100) { // Geschwindigkeit der Death-Animation
-//     if (this.currentDeathFrame < this.IMAGES_DEAD.length) {
-//       let path = this.IMAGES_DEAD[this.currentDeathFrame];
-//       this.img = this.imageCache[path];
-//       this.currentDeathFrame++;
-//       this.lastDeathAnimationTime = now;
-//     } else {
-//       this.isDeathAnimationComplete = true;
-//       // Setze das letzte Bild der Animation als permanentes Bild
-//       this.img = this.imageCache[this.IMAGES_DEAD[this.IMAGES_DEAD.length - 1]];
-//     }
-//   }
-// }
+  /**
+   * Makes the object fall downward continuously when dead.
+   */
+  startFalling() {
+    if (this.isFalling) return; 
+    this.isFalling = true;
+    this.acceleration = 4; 
+    this.speedY = 0;       
+    this.fallInterval = setInterval(() => {
+        this.y -= this.speedY;
+        this.speedY -= this.acceleration;
+        if (this.y > this.world.canvas.height) {
+            clearInterval(this.fallInterval);
+            this.y = 0; 
+        }
+    }, 1000); 
+  }
 
   /**
    * Plays the jump animation once (instead of looping).
@@ -328,7 +323,7 @@ resetCharacter() {
   this.energy = 100;
   this.x = 120;
   // this.y = 185;
-  this.speed = 10;
+  this.speed = 3;
   this.availableBottles = 0;
   this.availableCoins = 0; 
   this.coins = 0;

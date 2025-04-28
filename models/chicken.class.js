@@ -67,3 +67,4 @@ class Chicken extends MovableObject {
       this.chickenSound.muted = this.isMuted;
     }
 }
+

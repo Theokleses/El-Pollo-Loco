@@ -2,7 +2,7 @@ class MovableObject extends DrawableObject {
   speed = 0.15;
   otherDirection = false;
   speedY = 0;
-  acceleration = 2.5;
+  acceleration = 4;
   energy = 100;
   lastHit = 0;
   win_sound = new Audio("audio/win.mp3");
@@ -32,13 +32,29 @@ class MovableObject extends DrawableObject {
    */
   applyGravaty() {
     setInterval(() => {
-      if (this.isAboveGround() || this.speedY > 0) {
-        this.y -= this.speedY;
-        this.speedY -= this.acceleration;
-      }
+        if (this.isDead()) {
+            if (this instanceof Character || this instanceof Endboss) {
+                this.y -= this.speedY;
+                this.speedY -= this.acceleration;
+                return;
+            }
+        }
+    
+        if (this.isAboveGround() || this.speedY > 0) {
+            this.y -= this.speedY;
+            this.speedY -= this.acceleration;
+        } else if (!this.isAboveGround() && this.speedY <= 0) {
+            if (this instanceof ThrowableObject) {
+                this.speedY = 0;
+                this.acceleration = 0;
+                this.y = 370;
+            } else {
+                this.y = 200;
+                this.speedY = 0;
+            }
+        }
     }, 1000 / 25);
   }
-
   /**
    * Checks if the object is above the ground level.
    */  
