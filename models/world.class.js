@@ -91,62 +91,23 @@ class World {
   }
 
   /** Spawns new enemies if the character hasn't reached x = 2000 and enemy limit isn't reached. */
-  // spawnEnemies() {
-  //   if (!this.enemySpawnActive || this.character.x >= 2000) return;
-
-  //   // Spawne 2-3 Gegner gleichzeitig
-  //   const spawnCount = Math.floor(2 + Math.random() * 2); 
-    
-  //   for (let i = 0; i < spawnCount; i++) {
-  //       const isBigChicken = Math.random() < 0.3;
-  //       const newEnemy = isBigChicken ? new BigChicken() : new Chicken();
-  //       newEnemy.x = this.enemiesGap + (i * 100);
-  //       this.level.enemies.push(newEnemy);
-  //   }
-  //   this.enemiesGap += 300 + Math.random() * 200;
-  // }
-
-  // spawnEnemies() {
-  //   if (!this.enemySpawnActive || this.character.x >= 2000) return;
-
-  //   const currentTime = Date.now();
-  //   if (currentTime - this.lastEnemySpawnTime < this.enemySpawnCooldown) return;
-
-  //   const spawnCount = Math.floor(2 + Math.random() * 2);
-  //   for (let i = 0; i < spawnCount; i++) {
-  //     const isBigChicken = Math.random() < 0.3;
-  //     const newEnemy = isBigChicken ? new BigChicken() : new Chicken();
-  //     newEnemy.world = this; // World-Referenz weitergeben
-  //     newEnemy.x = this.enemiesGap + (i * 100);
-  //     this.level.enemies.push(newEnemy);
-  //   }
-  //   this.enemiesGap += 250 + Math.random() * 150;
-  //   this.lastEnemySpawnTime = currentTime; // Letzte Spawn-Zeit aktualisieren
-  // }
-
   spawnEnemies() {
     if (!this.enemySpawnActive || this.character.x >= 2000) return;
-
-    // Prüfen, ob die maximale Anzahl an Gegnern erreicht ist
     if (this.level.enemies.length >= this.maxEnemies) return;
-
-    // Prüfen, ob der Cooldown abgelaufen ist
     const currentTime = Date.now();
     if (currentTime - this.lastEnemySpawnTime < this.enemySpawnCooldown) return;
-
     const spawnCount = Math.floor(2 + Math.random() * 2);
     for (let i = 0; i < spawnCount; i++) {
       const isBigChicken = Math.random() < 0.3;
       const newEnemy = isBigChicken ? new BigChicken() : new Chicken();
-      newEnemy.world = this; // World-Referenz weitergeben
+      newEnemy.world = this; 
       newEnemy.x = this.enemiesGap + (i * 100);
       this.level.enemies.push(newEnemy);
     }
     this.enemiesGap += 400 + Math.random() * 200;
-    this.lastEnemySpawnTime = currentTime; // Letzte Spawn-Zeit aktualisieren
+    this.lastEnemySpawnTime = currentTime;
   }
   
-
   /** Tracks the mouse position on the canvas. */
   trackMousePosition() { 
     this.canvas.addEventListener("mousemove", (event) => { 
@@ -387,6 +348,7 @@ class World {
     this.isMusicPlaying = false;
     this.character.resetCharacter();
     this.statusBar.setPercentage(100);
+    this.endbossBar.setBossPercentage(100); 
     this.coinBar.setCoinPercentage(0);
     this.bottleBar.setBottlePercentage(0);
     this.spawnCoin();
@@ -468,6 +430,7 @@ class World {
     this.character.collisionCooldown = false; 
     this.level = null; 
     this.throwableObjects = []; 
+    this.endbossBar.setBossPercentage(100); 
     this.statusBar.setPercentage(100); 
     this.coinBar.setCoinPercentage(0); 
     this.bottleBar.setBottlePercentage(0); 
