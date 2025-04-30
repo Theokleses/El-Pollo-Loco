@@ -15,7 +15,7 @@ class World {
   enemySpawnActive = true;
   lastEnemySpawnTime = 0;
   enemySpawnCooldown = 1500; 
-  maxEnemies = 10; 
+  maxEnemies = 17; 
   
 
   /** Initializes the game world with canvas and keyboard. */
@@ -90,13 +90,12 @@ class World {
     this.spawnBottle(); 
   }
 
-  /** Spawns new enemies if the character hasn't reached x = 2000 and enemy limit isn't reached. */
+  /** Spawns new enemies if the character hasn't reached x = 2200 and enemy limit isn't reached. */
   spawnEnemies() {
-    if (!this.enemySpawnActive || this.character.x >= 2000) return;
     if (this.level.enemies.length >= this.maxEnemies) return;
     const currentTime = Date.now();
     if (currentTime - this.lastEnemySpawnTime < this.enemySpawnCooldown) return;
-    const spawnCount = Math.floor(2 + Math.random() * 2);
+    const spawnCount = Math.floor(3 + Math.random() * 2);
     for (let i = 0; i < spawnCount; i++) {
       const isBigChicken = Math.random() < 0.3;
       const newEnemy = isBigChicken ? new BigChicken() : new Chicken();
@@ -183,7 +182,7 @@ class World {
 
   /** Checks if the character has reached the endboss area. */
   checkCharacterPosition() {
-    if (this.character.x >= 2000) {
+    if (this.character.x >= 2300) {
       this.enemySpawnActive = false; 
       this.reachEndBoss = true;
       this.level.enemies = this.level.enemies.filter(e => e instanceof Endboss);
