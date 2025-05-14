@@ -1,5 +1,6 @@
 const BUTTON_CONFIG = { x: 0.375, y: 0.09375, width: 0.25, height: 0.1042 };
 const BACK_BUTTON_CONFIG = { x: 0.68,  y: 0.106, width: 0.08, height: 0.08,iconSize: 0.03 };
+const FULLSCREEN_BUTTON_CONFIG = { x: 0.90, y: 0.04, width: 0.06, height: 0.06 };
 
 class World {
   character = new Character(); canvas; ctx; keyboard; level; camera_x = 0;
@@ -16,12 +17,16 @@ class World {
   lastEnemySpawnTime = 0;
   enemySpawnCooldown = 1500; 
   maxEnemies = 17; 
+  defaultWidth = 720;
+  defaultHeight = 480;
   
 
   /** Initializes the game world with canvas and keyboard. */
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d"); 
     this.canvas = canvas; 
+    this.canvas.width = this.defaultWidth;
+    this.canvas.height = this.defaultHeight;
     this.ui = new UIHelper(this.ctx, canvas);
     this.renderer = new RenderManager(this.ctx, this);
     this.mouseX = 0; 
@@ -298,13 +303,13 @@ class World {
 
   /** Returns the absolute coordinates of the button. */
   getButtonCoordinates() { 
-    return [ BUTTON_CONFIG.x * this.canvas.width, BUTTON_CONFIG.y * this.canvas.height, BUTTON_CONFIG.width * this.canvas.width, BUTTON_CONFIG.height * this.canvas.height
-    ]; 
+    return [ BUTTON_CONFIG.x * this.canvas.width, BUTTON_CONFIG.y * this.canvas.height, BUTTON_CONFIG.width * this.canvas.width, BUTTON_CONFIG.height * this.canvas.height]; 
   }
 
   /** Checks if the mouse is over the button. */
   isButtonHovered(screen, absX, absY, absW, absH) { 
-    return screen.isMouseOverButton(this.mouseX, this.mouseY, absX, absY, absW, absH); 
+    const { adjustedMouseX, adjustedMouseY } = this.getAdjustedMouseCoords();
+    return screen.isMouseOverButton(adjustedMouseX, adjustedMouseY, absX, absY, absW, absH); 
   }
 
   /** Renders the button on the screen. */
@@ -321,8 +326,10 @@ class World {
     const [absX, absY, absW, absH] = this.getButtonCoordinates(); 
     const isHovered = this.renderButton(screen, buttonText, absX, absY, absW, absH); 
     let isBackHovered = false;
+    let isFullscreenHovered = false;
     if (gameState === "Lose" || gameState === "Win") {isBackHovered = this.renderBackButton(screen, "Back to Start");}
-    if (isHovered || isBackHovered) {this.canvas.style.cursor = 'pointer';}
+    isFullscreenHovered = this.renderFullscreenButton();
+    if (isHovered || isBackHovered || isFullscreenHovered) {this.canvas.style.cursor = 'pointer';}
     if (this.isMusicPlaying) { this.background_sound.pause(); this.isMusicPlaying = false;} 
     document.getElementById("muteButton").classList.add("d_none"); 
     document.getElementById("muteButtonOverlay").classList.add("d_none"); 
@@ -330,13 +337,23 @@ class World {
   
   /** Checks if the mouse is within a circular area defined by center (cx, cy) and radius r. */
   isMouseOver(cx, cy, r) {
-    return Math.sqrt((this.mouseX-cx)**2 + (this.mouseY-cy)**2) <= r;
+    const { adjustedMouseX, adjustedMouseY } = this.getAdjustedMouseCoords();
+    return Math.sqrt((adjustedMouseX - cx) ** 2 + (adjustedMouseY - cy) ** 2) <= r;
   }
 
   /** Checks if the main button is clicked based on mouse position. */
   isMainButtonClicked() {
     const [absX, absY, absW, absH] = this.getButtonCoordinates();
-    return this.mouseX >= absX && this.mouseX <= absX + absW && this.mouseY >= absY && this.mouseY <= absY + absH;
+    const { adjustedMouseX, adjustedMouseY } = this.getAdjustedMouseCoords();
+    return (adjustedMouseX >= absX && adjustedMouseX <= absX + absW && adjustedMouseY >= absY && adjustedMouseY <= absY + absH);
+  }
+
+  /** Helper method to adjust mouse coordinates for canvas scaling */
+  getAdjustedMouseCoords() {
+    const rect = this.canvas.getBoundingClientRect();
+    const scaleX = this.canvas.width / rect.width;
+    const scaleY = this.canvas.height / rect.height;
+    return {adjustedMouseX: this.mouseX * scaleX, adjustedMouseY: this.mouseY * scaleY};
   }
 
   /** Resets the game to the start screen state. */
@@ -357,34 +374,30 @@ class World {
 
   /** Handles canvas click events based on game state. */
   handleCanvasClick = (event) => { 
-    const rect = this.canvas.getBoundingClientRect();
-    this.mouseX = event.clientX - rect.left;
-    this.mouseY = event.clientY - rect.top;
-
-    if (gameState === "Lose" || gameState === "Win") {
-      if (this.isBackButtonClicked()) {this.goBackToStart();
-        return;
-      }
-
-      if (this.isMainButtonClicked()) {this.resetGame();
-        return;
-      }
-    } else if (gameState === "Start") {
-      if (this.isMainButtonClicked()) {gameState = "Game";this.setWorld();
-        return;
-      }
+  const rect = this.canvas.getBoundingClientRect();
+  this.mouseX = event.clientX - rect.left;
+  this.mouseY = event.clientY - rect.top;
+  if ((gameState === "Lose" || gameState === "Win") && this.isBackButtonClicked()) {this.goBackToStart(); return; }
+  if (this.isFullscreenButtonClicked()) {toggleFullscreen(); return;}
+  if (this.isMainButtonClicked()) {
+    if (gameState === "Start") { gameState = "Game"; 
+      this.setWorld();
+    } else if (gameState === "Lose" || gameState === "Win") {this.resetGame();}
+    return;
     }
   }
 
   /** Checks if the back button is clicked based on mouse position. */
   isBackButtonClicked() {
-    return this.ui.isButtonClicked(this.mouseX, this.mouseY, BACK_BUTTON_CONFIG);
-  }
+      const rect = this.canvas.getBoundingClientRect();
+      return this.ui.isButtonClicked(this.mouseX * (this.canvas.width / rect.width),this.mouseY * (this.canvas.height / rect.height), BACK_BUTTON_CONFIG);
+    }
   
   /** Renders a back button with a house icon and hover effect on the canvas. */
   renderBackButton() {
     const { cx, cy, r } = this.ui.getButtonCenter(BACK_BUTTON_CONFIG);
-    const hovered = this.ui.isMouseOver(this.mouseX, this.mouseY, cx - r, cy - r, r * 2, r * 2);
+    const { adjustedMouseX, adjustedMouseY } = this.getAdjustedMouseCoords();
+    const hovered = this.ui.isMouseOver(adjustedMouseX, adjustedMouseY, cx - r, cy - r, r * 2, r * 2);
     this.ui.drawButtonBase(cx, cy, r, hovered);
     this.ui.drawHouseIcon(cx, cy, hovered);
     return hovered;
@@ -410,14 +423,15 @@ class World {
   drawGameState() { 
     if (gameState != "Game") return; 
     if (!this.isMusicPlaying) { 
-      this.background_sound.play().catch(error => console.error('Error playing background music:', error)); 
-      this.isMusicPlaying = true;  
+        this.background_sound.play().catch(error => console.error('Error playing background music:', error)); 
+        this.isMusicPlaying = true;  
     } 
     document.getElementById("muteButton").classList.remove("d_none"); 
     document.getElementById("muteButtonOverlay").classList.remove("d_none"); 
-    this.canvas.style.cursor = 'default'; 
     this.renderer.drawBackgroundAndBars();
     this.renderer.drawInteractiveObjects();
+    const isFullscreenHovered = this.renderFullscreenButton();
+    this.canvas.style.cursor = isFullscreenHovered ? 'pointer' : 'default';
   }
 
   /** Resets the game to its initial state. */
@@ -466,5 +480,20 @@ class World {
   /** Adds multiple objects to the map. */
   addObjectToMap(objects) { 
     objects.forEach(o => this.addToMap(o)); 
+  }
+
+  /** Checks if the fullscreen button is clicked based on mouse position */
+  isFullscreenButtonClicked() {
+    if (isMobileOrTablet()) {
+        return false;
+    }
+    const { adjustedMouseX, adjustedMouseY } = this.getAdjustedMouseCoords();
+    const { x, y, width, height } = FULLSCREEN_BUTTON_CONFIG;
+    return adjustedMouseX >= x * this.canvas.width && adjustedMouseX <= (x + width) * this.canvas.width && adjustedMouseY >= y * this.canvas.height && adjustedMouseY <= (y + height) * this.canvas.height;
+  }
+
+  /** Renders the fullscreen button */
+  renderFullscreenButton() {
+    return this.renderer.renderFullscreenButton(this.mouseX, this.mouseY);
   }
 }
