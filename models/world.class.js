@@ -1,6 +1,6 @@
 const BUTTON_CONFIG = { x: 0.375, y: 0.09375, width: 0.25, height: 0.1042 };
 const BACK_BUTTON_CONFIG = { x: 0.68,  y: 0.106, width: 0.08, height: 0.08,iconSize: 0.03 };
-const FULLSCREEN_BUTTON_CONFIG = { x: 0.90, y: 0.04, width: 0.06, height: 0.06 };
+const FULLSCREEN_BUTTON_CONFIG = { x: 0.919, y: 0.03, width: 0.06, height: 0.06 };
 
 class World {
   character = new Character(); canvas; ctx; keyboard; level; camera_x = 0;
