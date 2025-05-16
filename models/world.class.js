@@ -16,7 +16,7 @@ class World {
   enemySpawnActive = true;
   lastEnemySpawnTime = 0;
   enemySpawnCooldown = 1500; 
-  maxEnemies = 17; 
+  maxEnemies = 15; 
   defaultWidth = 720;
   defaultHeight = 480;
   
@@ -105,10 +105,10 @@ class World {
       const isBigChicken = Math.random() < 0.3;
       const newEnemy = isBigChicken ? new BigChicken() : new Chicken();
       newEnemy.world = this; 
-      newEnemy.x = this.enemiesGap + (i * 100);
+      newEnemy.x = this.enemiesGap + (i * 200);
       this.level.enemies.push(newEnemy);
     }
-    this.enemiesGap += 400 + Math.random() * 200;
+    this.enemiesGap += 500 + Math.random() * 200;
     this.lastEnemySpawnTime = currentTime;
   }
   
