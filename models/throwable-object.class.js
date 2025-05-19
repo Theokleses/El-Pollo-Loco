@@ -28,11 +28,8 @@ class ThrowableObject extends MovableObject {
         this.currentImageIndex = 0;
         this.hasCollided = false;
         this.hasHitGround = false;
-        this.splashSound = new Audio('audio/bottle-splash.mp3'); 
-        this.splashSound.volume = 0.3;
-        this.splashSoundPlayed = false; 
+        this.splashSoundPlayed = false;
         this.isMuted = localStorage.getItem("isMuted") === "true";
-        this.splashSound.muted = this.isMuted;
         this.animate();
     }
     
@@ -61,12 +58,10 @@ class ThrowableObject extends MovableObject {
     animate() {
         setInterval(() => {
             if (this.hasCollided) {
-                // Spiel den Sound nur beim ersten Frame der Splash-Animation
                 if (!this.splashSoundPlayed) {
-                    this.splashSound.play();
+                    world.soundManager.playSound('bottle-splash', this.isMuted);
                     this.splashSoundPlayed = true;
                 }
-                
                 this.currentImageIndex = (this.currentImageIndex + 1) % this.BOTTLE_SPLASH.length;
                 this.loadImage(this.BOTTLE_SPLASH[this.currentImageIndex]);
             } else if (!this.isAboveGround()) {

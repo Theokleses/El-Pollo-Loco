@@ -16,7 +16,7 @@ class Character extends MovableObject {
   currentJumpFrame = 0;
   isJumping = false;
   jumpAnimationCompleted = false;
-  jumpAnimationSpeed = 90; 
+  jumpAnimationSpeed = 57; 
   isDeathAnimationComplete = false; 
   isFalling = false; 
 
@@ -38,7 +38,7 @@ class Character extends MovableObject {
     "img/2_character_pepe/3_jump/J-36.png",
     "img/2_character_pepe/3_jump/J-37.png",
     "img/2_character_pepe/3_jump/J-38.png",
-    "img/2_character_pepe/3_jump/J-39.png",
+    // "img/2_character_pepe/3_jump/J-39.png",
   ];
 
   IMAGES_IDLE = [
@@ -92,10 +92,8 @@ class Character extends MovableObject {
     this.loadImages(this.IMAGES_IDLE_LONG);
     this.collisionCooldown = false;
     this.isMuted = localStorage.getItem("isMuted") === "true";
-    this.sounds.forEach((sound) => (sound.muted = this.isMuted));
     this.applyGravaty();
     this.updateCollisionBox();
-
     this.isDeathAnimationComplete = false;
     this.deathAnimationStarted = false;
     this.currentDeathFrame = 0
@@ -132,9 +130,9 @@ animate() {
  * Handles movement to the right
  */
 handleMoveRight() {
+  if (!this.isMuted) {this.walking_sound.play();}
   this.moveRight();
   this.idleCounter = 0;
-  this.walking_sound.play();
   this.otherDirection = false;
 }
 
@@ -142,9 +140,9 @@ handleMoveRight() {
  * Handles movement to the left.
  */
 handleMoveLeft() {
+  if (!this.isMuted) {this.walking_sound.play();}
   this.moveLeft();
   this.idleCounter = 0;
-  this.walking_sound.play();
   this.otherDirection = true;
 }
 
@@ -198,27 +196,27 @@ updateAnimation() {
   }
 }
 
-  /**
-   * Makes the object fall downward continuously when dead.
-   */
-  startFalling() {
-    if (this.isFalling) return; 
-    this.isFalling = true;
-    this.acceleration = 4; 
-    this.speedY = 0;       
-    this.fallInterval = setInterval(() => {
-        this.y -= this.speedY;
-        this.speedY -= this.acceleration;
-        if (this.y > this.world.canvas.height) {
-            clearInterval(this.fallInterval);
-            this.y = 0; 
-        }
-    }, 1000); 
-  }
+/**
+  * Makes the object fall downward continuously when dead.
+  */
+startFalling() {
+  if (this.isFalling) return; 
+  this.isFalling = true;
+  this.acceleration = 4; 
+  this.speedY = 0;       
+  this.fallInterval = setInterval(() => {
+      this.y -= this.speedY;
+      this.speedY -= this.acceleration;
+      if (this.y > this.world.canvas.height) {
+          clearInterval(this.fallInterval);
+          this.y = 0; 
+      }
+  }, 1000); 
+}
 
-  /**
-   * Plays the jump animation once (instead of looping).
-   */
+/**
+  * Plays the jump animation once (instead of looping).
+  */
 playJumpAnimationOnce() {
   const now = Date.now();
   if (now - this.lastAnimationTime >= this.jumpAnimationSpeed) {

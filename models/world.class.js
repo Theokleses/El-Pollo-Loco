@@ -16,7 +16,7 @@ class World {
   enemySpawnActive = true;
   lastEnemySpawnTime = 0;
   enemySpawnCooldown = 1500; 
-  maxEnemies = 15; 
+  maxEnemies = 30; 
   defaultWidth = 720;
   defaultHeight = 480;
   
@@ -40,10 +40,11 @@ class World {
     this.background_sound.volume = 0.2; 
     this.level = null; 
     this.trackMousePosition(); 
+    this.soundManager = new SoundManager();
     this.canvas.addEventListener("click", (event) => this.handleCanvasClick(event));
     this.draw();
   }
-  
+
   /** Starts the main game loop. */
   run() {
     this.runInterval = setInterval(() => {
@@ -83,7 +84,7 @@ class World {
     this.isMuted = storedMute === 'true'; 
     this.toggleWorldSounds();
     this.coinsGap = 600; 
-    this.enemiesGap = 600;
+    this.enemiesGap = 700;
     this.enemySpawnActive = true;
     this.Spawner(); 
     this.run();
@@ -100,7 +101,7 @@ class World {
     if (this.level.enemies.length >= this.maxEnemies) return;
     const currentTime = Date.now();
     if (currentTime - this.lastEnemySpawnTime < this.enemySpawnCooldown) return;
-    const spawnCount = Math.floor(3 + Math.random() * 2);
+    const spawnCount = Math.floor(4 + Math.random() * 2);
     for (let i = 0; i < spawnCount; i++) {
       const isBigChicken = Math.random() < 0.3;
       const newEnemy = isBigChicken ? new BigChicken() : new Chicken();
@@ -108,7 +109,7 @@ class World {
       newEnemy.x = this.enemiesGap + (i * 200);
       this.level.enemies.push(newEnemy);
     }
-    this.enemiesGap += 500 + Math.random() * 200;
+    this.enemiesGap += 300 + Math.random() * 300;
     this.lastEnemySpawnTime = currentTime;
   }
   
@@ -143,6 +144,11 @@ class World {
     setTimeout(() => { 
       if (this.coinsGap <= 2000) this.spawnBottle(); 
     }, 100); 
+  }
+
+  /** Plays a sound effect from the sound manager. */
+  playSound(key) {
+    this.soundManager.playSound(key, this.soundManager.isMuted);
   }
 
   /** Toggles the mute state of all sounds. */
@@ -235,7 +241,7 @@ class World {
     for (let i = this.level.enemies.length - 1; i >= 0; i--) { 
       const enemy = this.level.enemies[i]; 
       if (this.character.isColliding(enemy) && enemy.energy > 0) { 
-        if (enemy instanceof Endboss) enemy.changeSpeed(5); 
+        if (enemy instanceof Endboss) enemy.changeSpeed(0); 
         if (!this.character.collisionCooldown) { 
           this.character.collisionCooldown = true; 
           this.character.hit(); 

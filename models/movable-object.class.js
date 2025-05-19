@@ -5,26 +5,13 @@ class MovableObject extends DrawableObject {
   acceleration = 4;
   energy = 100;
   lastHit = 0;
-  win_sound = new Audio("audio/win.mp3");
-  lose_sound = new Audio("audio/lose.mp3");
   walking_sound = new Audio("audio/running.mp3");
   jumping_sound = new Audio("audio/jumping.mp3");
-  hurt_sound = new Audio("audio/hurt.mp3");
-  sounds = [
-    this.win_sound,
-    this.lose_sound,
-    this.walking_sound,
-    this.jumping_sound,
-    this.hurt_sound
-  ];
 
   constructor() {
     super();
     this.isMuted = localStorage.getItem("isMuted") === "true";
-    this.sounds.forEach((sound) => (sound.muted = this.isMuted));
     this.walking_sound.volume = 0.4;
-    this.hurt_sound.volume = 0.3;
-    this.jumping_sound.volume = 0.3;
   }
 
   /**
@@ -55,6 +42,7 @@ class MovableObject extends DrawableObject {
         }
     }, 1000 / 25);
   }
+
   /**
    * Checks if the object is above the ground level.
    */  
@@ -100,12 +88,12 @@ class MovableObject extends DrawableObject {
       this.energy = 0;
       if (this instanceof Character) {
         setTimeout(() => {
-          if (!this.isMuted) {this.lose_sound.currentTime = 0; this.lose_sound.play();}
+          if (!this.isMuted) {world.soundManager.playSound('lose', this.isMuted); this.deathSoundPlayed = true;}
           gameState = "Lose";
         }, 1000);
       }
       if (this instanceof Endboss) {
-        setTimeout(() => {this.win_sound.currentTime = 0; this.win_sound.play();
+        setTimeout(() => {world.soundManager.playSound('win', this.isMuted); this.deathSoundPlayed = false;
           gameState = "Win";
         }, 1000);
       }
@@ -118,7 +106,6 @@ class MovableObject extends DrawableObject {
    */
   toggleMute() {
     this.isMuted = checkSoundMuted();
-    this.sounds.forEach((sounds) => (sounds.muted = this.isMuted));
   }
 
   /**
@@ -137,7 +124,7 @@ class MovableObject extends DrawableObject {
     if (this instanceof Character) {
       if (this.isDead()) {
         if (this.isPlayingHurtSound) {this.hurt_sound.pause(); this.isPlayingHurtSound = false;}
-      } else if (isCurrentlyHurt && !this.isPlayingHurtSound) {this.hurt_sound.play(); this.isPlayingHurtSound = true;
+      } else if (isCurrentlyHurt && !this.isPlayingHurtSound) {world.soundManager.playSound('hurt', this.isMuted); this.isPlayingHurtSound = true;
       } else if (!isCurrentlyHurt && this.isPlayingHurtSound) {this.isPlayingHurtSound = false;}
     }
     return isCurrentlyHurt;
@@ -180,8 +167,8 @@ class MovableObject extends DrawableObject {
     const offset = 1;
     const legsY = this.collisionY + this.collisionHeight * 0.7;
     const legsHeight = this.collisionHeight * 0.3;
-    const feetWidth = this.collisionWidth; // Volle Breite der Kollisionsbox
-    const feetX = this.collisionX; // Keine Zentrierung nötig
+    const feetWidth = this.collisionWidth; 
+    const feetX = this.collisionX; 
 
     return (
         feetX + feetWidth > mo.x - offset &&      

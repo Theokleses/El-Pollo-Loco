@@ -59,12 +59,8 @@ class Endboss extends MovableObject {
     this.speed = 0;
     this.stateAlert = true;
     this.returningToStart = false;
-    this.deathSound = new Audio('audio/endboss.mp3');
-    this.sounds.push(this.deathSound);
     this.isMuted = localStorage.getItem("isMuted") === "true";
-    this.deathSound.muted = this.isMuted;
     this.deathSoundPlayed = false;
-    this.updateSoundMuteState();
     this.animate();
   }
 
@@ -94,31 +90,24 @@ class Endboss extends MovableObject {
   /**
    * Handles the death animation with sound effect.
    */
-    handleDeath() {
-      if (!this.deathSoundPlayed) {
-        this.deathSound.play();
-        this.deathSoundPlayed = true;
-      }
-      this.playAnimation(this.IMAGES_DEAD);
-      setInterval(() => {
-        if (!this.isFalling) {
-          this.startFalling();
-        }
-      }, 500);
+  handleDeath() {
+    if (!this.deathSoundPlayed) {
+      world.soundManager.playSound('endboss-dead', this.isMuted);
+      this.deathSoundPlayed = true;
     }
+    this.playAnimation(this.IMAGES_DEAD);
+    setInterval(() => {
+      if (!this.isFalling) {
+        this.startFalling();
+      }
+    }, 500);
+  }
 
   /**
    * Changes the movement speed of the boss.
    */
   changeSpeed(speed) {
     this.speed = speed;
-  }
-
-  /**
-   * Updates the Mute state of the boss.
-   */
-  updateSoundMuteState() {
-    this.sounds.forEach(sound => sound.muted = this.isMuted);
   }
 
   /**

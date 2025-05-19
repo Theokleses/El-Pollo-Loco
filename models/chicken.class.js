@@ -18,40 +18,36 @@ class Chicken extends MovableObject {
     this.loadImages(this.IMAGES_WALKING);
     this.loadImages(this.IMAGE_DEAD);
     this.speed = 0.15 + Math.random() * 0.7;
-    this.chickenSound = new Audio('audio/chicken.mp3'); 
-    this.chickenSound.volume = 0.2;
     this.deathSoundPlayed = false;
     this.isMuted = localStorage.getItem("isMuted") === "true";
-    this.chickenSound.muted = this.isMuted;
     this.animate();
   }
 
   /**
    * Starts the animations of the chicken.
    */
-  animate() {
-    setInterval(() => {
-      if (!this.isDead()) {
-        this.moveLeft();
-      }
-    }, 1000 / 60);
+    animate() {
+      setInterval(() => {
+        if (!this.isDead()) {
+          this.moveLeft();
+        }
+      }, 1000 / 60);
 
-    setInterval(() => {
-      if (this.isDead()) {
-        this.playDeadAnimation(); // Neue Methode für die Dead-Animation
-      } else {
-        this.playAnimation(this.IMAGES_WALKING);
-      }
-    }, 100);
-  }
+      setInterval(() => {
+        if (this.isDead()) {
+          this.playDeadAnimation(); 
+        } else {
+          this.playAnimation(this.IMAGES_WALKING);
+        }
+      }, 100);
+    }
 
   /**
    * Plays the death animation with adjusted y-position.
    */
     playDeadAnimation() {
       if (!this.deathSoundPlayed) {
-        // this.chickenSound.currentTime = 0;
-        this.chickenSound.play();
+        world.soundManager.playSound('chicken-dead', this.isMuted);
         this.deathSoundPlayed = true;
       }
       this.playAnimation(this.IMAGE_DEAD);
@@ -64,7 +60,6 @@ class Chicken extends MovableObject {
    */
     toggleMute() {
       this.isMuted = !this.isMuted;
-      this.chickenSound.muted = this.isMuted;
     }
 }
 
